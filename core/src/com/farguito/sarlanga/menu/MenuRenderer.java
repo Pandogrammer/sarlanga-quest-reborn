@@ -64,8 +64,8 @@ public class MenuRenderer {
 
         batcher.begin();
         batcher.enableBlending();
-
-        AssetLoader.text.draw(batcher, controller.getText(), (136 / 2), 12);
+        controller.getPassword().draw(batcher, 1);
+        controller.getUsername().draw(batcher, 1);
 
         batcher.end();
     }
