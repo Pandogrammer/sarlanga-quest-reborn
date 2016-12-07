@@ -11,9 +11,9 @@ public class AssetLoader {
     public static BitmapFont text;
     public static Skin textSkin;
 
-    public static Texture explosionTexture, lennethTexture, outlaw, monsters, splash, arena, buttonBar;
+    public static Texture explosionTexture, lennethTexture, outlaw, monsters, splash, buttonBar, selection;
 
-    public static TextureRegion outlawStanding, rat;
+    public static TextureRegion outlawStanding, rat, arena;
 
     public static TextureRegion[] explosionRegions, outlawRegions, lennethRegions;
 
@@ -24,10 +24,15 @@ public class AssetLoader {
         text = new BitmapFont(Gdx.files.internal("data/text.fnt"));
         textSkin = new Skin(Gdx.files.internal("data/uiskin.json"));
         splash = new Texture(Gdx.files.internal("data/splash.png"));
-        arena = new Texture(Gdx.files.internal("data/arena.png"));
+
         monsters = new Texture(Gdx.files.internal("monsters/monsters.png"));
         outlaw = new Texture(Gdx.files.internal("characters/outlaw.png"));
         buttonBar = new Texture(Gdx.files.internal("data/button_bar.png"));
+        selection = new Texture(Gdx.files.internal("data/selection.png"));
+
+
+        arena = new TextureRegion(new Texture(Gdx.files.internal("data/arena.png")));
+        arena.flip(false, true);
 
         lennethTexture = new Texture(Gdx.files.internal("characters/lenneth.png"));
         lennethRegions = new TextureRegion[] {
@@ -73,7 +78,10 @@ public class AssetLoader {
         outlawStandingAnm.setPlayMode(Animation.PlayMode.LOOP);
 
         rat = new TextureRegion(monsters, 678, 1569, 31, 30);
+        rat.flip(false, true);
+
         outlawStanding = new TextureRegion(outlaw, 124, 3, 26, 31);
+        outlawStanding.flip(false, true);
     }
 
     public static void dispose() {
@@ -83,9 +91,10 @@ public class AssetLoader {
         lennethTexture.dispose();
         explosionTexture.dispose();
         explosionTexture.dispose();
-        arena.dispose();
+        arena.getTexture().dispose();
         monsters.dispose();
         outlaw.dispose();
         buttonBar.dispose();
+        selection.dispose();
     }
 }

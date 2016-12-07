@@ -12,36 +12,23 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Character {
 
-    private Vector2 position;
-    private int width;
-    private int height;
-
-    private boolean isAlive;
-
     private int hp;
     private int damage;
     private int defense;
     private int speed;
+    private int minTurnCounter;
+    private int maxTurnCounter;
 
-    private int turnCounter;
-
-    private boolean playerCharacter;
     private CharacterCode code;
 
-    public Character(float x, float y, int hp, int damage, int defense, int speed, int minTurnCounter, int maxTurnCounter, CharacterCode code, boolean playerCharacter) {
-        position = new Vector2(x, y);
-        isAlive = true;
+    public Character(int hp, int damage, int defense, int speed, int minTurnCounter, int maxTurnCounter, CharacterCode code) {
         this.speed = speed;
         this.hp = hp;
         this.damage = damage;
         this.defense = defense;
-        this.playerCharacter = playerCharacter;
         this.code = code;
-        turnCounter = ThreadLocalRandom.current().nextInt(minTurnCounter, maxTurnCounter + 1);
-    }
-
-    public void update(){
-        turnCounter += speed;
+        this.minTurnCounter = minTurnCounter;
+        this.maxTurnCounter = maxTurnCounter;
     }
 
     public int getHp() {
@@ -76,48 +63,20 @@ public class Character {
         this.speed = speed;
     }
 
-    public Vector2 getPosition() {
-        return position;
+    public int getMinTurnCounter() {
+        return minTurnCounter;
     }
 
-    public void setPosition(Vector2 position) {
-        this.position = position;
+    public void setMinTurnCounter(int minTurnCounter) {
+        this.minTurnCounter = minTurnCounter;
     }
 
-    public boolean isAlive() {
-        return isAlive;
+    public int getMaxTurnCounter() {
+        return maxTurnCounter;
     }
 
-    public void setAlive(boolean alive) {
-        isAlive = alive;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public boolean isPlayerCharacter() {
-        return playerCharacter;
-    }
-
-    public int getTurnCounter() {
-        return turnCounter;
-    }
-
-    public void setTurnCounter(int turnCounter) {
-        this.turnCounter = turnCounter;
+    public void setMaxTurnCounter(int maxTurnCounter) {
+        this.maxTurnCounter = maxTurnCounter;
     }
 
     public CharacterCode getCode() {

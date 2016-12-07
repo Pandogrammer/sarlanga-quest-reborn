@@ -16,6 +16,8 @@ import java.util.List;
 
 public class BattleRenderer {
 
+    private int gameHeight;
+
     private BattleController controller;
     private OrthographicCamera cam;
     private ShapeRenderer shapeRenderer;
@@ -24,7 +26,8 @@ public class BattleRenderer {
 
     private SpriteBatch batcher;
 
-    private Texture background, buttonBar;
+    private Texture buttonBar, selection;
+    private TextureRegion background;
 
 
     private int midPointY;
@@ -42,6 +45,7 @@ public class BattleRenderer {
 
     public BattleRenderer(BattleController controller, int gameHeight, int midPointY) {
         this.controller = controller;
+        this.gameHeight = gameHeight;
 
         this.midPointY = midPointY;
 
@@ -49,7 +53,7 @@ public class BattleRenderer {
 
 
         cam = new OrthographicCamera();
-        cam.setToOrtho(false, SarlangaQuest.GAME_WIDTH, gameHeight);
+        cam.setToOrtho(true, SarlangaQuest.GAME_WIDTH, gameHeight);
 
         batcher = new SpriteBatch();
         batcher.setProjectionMatrix(cam.combined);
@@ -61,19 +65,16 @@ public class BattleRenderer {
     }
 
     private void initObjects(){
-        for(Character character : controller.getCharacters()){
-            battleCharacters.add(new BattleCharacter(character));
-        }
+        battleCharacters = controller.getBattleCharacters();
     }
     private void initAssets() {
         background = AssetLoader.arena;
         buttonBar = AssetLoader.buttonBar;
+        selection = AssetLoader.selection;
         TextureRegion textureRegion;
-        Character character;
         for(BattleCharacter battleCharacter : battleCharacters){
-            character = battleCharacter.getCharacter();
-            textureRegion = textureHelper.getRegion(character);
-            if(character.isPlayerCharacter()) {
+            textureRegion = new TextureRegion(textureHelper.getRegion(battleCharacter.getCharacter()));
+            if(battleCharacter.isPlayerCharacter()) {
                 battleCharacter.setTextureRegion(textureRegion);
             } else {
                 textureRegion.flip(true, false);
@@ -87,18 +88,33 @@ public class BattleRenderer {
         batcher.begin();
         batcher.disableBlending();
 
-        batcher.draw(background, 0, buttonBar.getHeight());
-        batcher.draw(buttonBar, 0, 0);
+        batcher.draw(background, 0, -buttonBar.getHeight());
+        batcher.draw(buttonBar, 0, gameHeight-buttonBar.getHeight());
 
         batcher.enableBlending();
         for(BattleCharacter battleCharacter : battleCharacters) {
-            if(battleCharacter.getCharacter().isAlive())
+            if(battleCharacter.isAlive()) {
                 batcher.draw(
                         battleCharacter.getTextureRegion(),
-                        battleCharacter.getCharacter().getPosition().x,
-                        battleCharacter.getCharacter().getPosition().y);
+                        battleCharacter.getX(),
+                        battleCharacter.getY());
+
+                if(battleCharacter.isSelected()){
+                    batcher.draw(selection,
+                            battleCharacter.getBounds().getX()-battleCharacter.getBounds().getWidth()*0.1f,
+                            battleCharacter.getBounds().getY()-battleCharacter.getBounds().getHeight()*0.1f,
+                            battleCharacter.getBounds().getWidth()*1.15f,
+                            battleCharacter.getBounds().getHeight()*1.15f
+                            );
+                }
+            }
         }
 
+
         batcher.end();
+    }
+
+    public List<BattleCharacter> getBattleCharacters() {
+        return battleCharacters;
     }
 }
