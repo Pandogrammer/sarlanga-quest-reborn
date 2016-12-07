@@ -1,26 +1,23 @@
-package com.farguito.sarlanga.menu;
+package com.farguito.sarlanga.battle;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.farguito.sarlanga.battle.BattleScreen;
-import com.farguito.sarlanga.helpers.AssetLoader;
+import com.farguito.sarlanga.menu.CharacterNameInputListener;
+import com.farguito.sarlanga.menu.MenuController;
 import com.farguito.sarlanga.ui.SimpleButton;
 
 import java.util.List;
 
-public class MenuInputHandler implements InputProcessor {
 
+public class BattleInputHandler implements InputProcessor {
 
     private List<SimpleButton> menuButtons;
-    private CharacterNameInputListener inputListener;
-    private MenuController controller;
+    private BattleController controller;
 
     private float scaleFactorX;
     private float scaleFactorY;
 
-    public MenuInputHandler(MenuController controller, float scaleFactorX,
-                            float scaleFactorY) {
-        inputListener  = new CharacterNameInputListener(controller);
+    public BattleInputHandler(BattleController controller, float scaleFactorX,
+                              float scaleFactorY) {
         this.controller = controller;
         this.scaleFactorX = scaleFactorX;
         this.scaleFactorY = scaleFactorY;
@@ -43,7 +40,6 @@ public class MenuInputHandler implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        controller.startBattle();
         return false;
     }
 

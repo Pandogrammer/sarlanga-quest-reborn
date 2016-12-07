@@ -1,22 +1,21 @@
-package com.farguito.sarlanga.menu;
+package com.farguito.sarlanga.battle;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.farguito.sarlanga.SarlangaQuest;
-import com.farguito.sarlanga.battle.BattleScreen;
 
-public class MenuScreen implements Screen {
+/**
+ * Created by Latharia on 06/12/2016.
+ */
 
-    private SarlangaQuest game;
-    private MenuRenderer renderer;
-    private MenuController controller;
+public class BattleScreen implements Screen {
+
+    private BattleRenderer renderer;
+    private BattleController controller;
     private float runTime;
 
-    public MenuScreen(SarlangaQuest game){
-        this.game = game;
 
+    public BattleScreen (SarlangaQuest game){
         float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
 
@@ -24,10 +23,11 @@ public class MenuScreen implements Screen {
         float gameHeight = screenHeight / (screenWidth / gameWidth);
         int midPointY = (int) (gameHeight / 2);
 
-        controller = new MenuController(this, midPointY);
-        renderer = new MenuRenderer(controller, (int) gameWidth, (int) gameHeight, midPointY);
-        Gdx.input.setInputProcessor(new MenuInputHandler(controller, screenWidth / gameWidth, screenHeight / gameHeight));
+        controller = new BattleController();
+        renderer = new BattleRenderer(controller, (int) gameHeight, midPointY);
+        Gdx.input.setInputProcessor(new BattleInputHandler(controller, screenWidth / gameWidth, screenHeight / gameHeight));
         controller.setRenderer(renderer);
+
     }
 
     @Override
@@ -65,13 +65,5 @@ public class MenuScreen implements Screen {
     @Override
     public void dispose() {
 
-    }
-
-    public SarlangaQuest getGame() {
-        return game;
-    }
-
-    public void startBattle() {
-        game.setScreen(new BattleScreen(game));
     }
 }
