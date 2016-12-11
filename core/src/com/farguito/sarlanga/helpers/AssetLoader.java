@@ -11,28 +11,74 @@ public class AssetLoader {
     public static BitmapFont text;
     public static Skin textSkin;
 
-    public static Texture explosionTexture, lennethTexture, outlaw, monsters, splash, buttonBar, selection;
+    public static Texture explosionTexture, lennethTexture, outlaw, monsters, splash, buttonBarTexture, selection, turnTexture, attack;
 
-    public static TextureRegion outlawStanding, rat, arena;
+    public static TextureRegion outlawStanding, rat, arena, turnBar, turnP1, turnP2, turnE1, turnE2, turnE3, turnIndicator, buttonBar,
+            attackButtonUp, attackButtonDown, skillButtonUp, skillButtonDown,
+            itemButtonUp, itemButtonDown, defendButtonUp, defendButtonDown;
 
-    public static TextureRegion[] explosionRegions, outlawRegions, lennethRegions;
+    public static TextureRegion[] explosionRegions, outlawRegions, lennethRegions, attackRegions;
 
-    public static Animation explosionAnimation, outlawStandingAnm, lennetAnimation;
+    public static Animation explosionAnimation, outlawStandingAnm, lennetAnimation, attackAnimation;
 
 
     public static void load() {
-        text = new BitmapFont(Gdx.files.internal("data/text.fnt"));
+        text = new BitmapFont(Gdx.files.internal("data/text.fnt"), true);
+
         textSkin = new Skin(Gdx.files.internal("data/uiskin.json"));
         splash = new Texture(Gdx.files.internal("data/splash.png"));
 
         monsters = new Texture(Gdx.files.internal("monsters/monsters.png"));
         outlaw = new Texture(Gdx.files.internal("characters/outlaw.png"));
-        buttonBar = new Texture(Gdx.files.internal("data/button_bar.png"));
-        selection = new Texture(Gdx.files.internal("data/selection.png"));
 
+        buttonBarTexture = new Texture(Gdx.files.internal("battle/button_bar.png"));
+        turnTexture = new Texture(Gdx.files.internal("battle/turn_bar.png"));
+        selection = new Texture(Gdx.files.internal("battle/selection.png"));
+        attack = new Texture(Gdx.files.internal("battle/attack.png"));
 
-        arena = new TextureRegion(new Texture(Gdx.files.internal("data/arena.png")));
+        arena = new TextureRegion(new Texture(Gdx.files.internal("battle/arena.png")));
         arena.flip(false, true);
+
+        turnBar = new TextureRegion(turnTexture, 4, 1, 5, 105);
+
+        turnP1 = new TextureRegion(turnTexture, 21, 3, 14, 14);
+        turnP1.flip(false, true);
+        turnP2 = new TextureRegion(turnTexture, 21, 18, 14, 14);
+        turnP2.flip(false, true);
+
+        turnE1 = new TextureRegion(turnTexture, 21, 33, 14, 14);
+        turnE1.flip(false, true);
+        turnE2 = new TextureRegion(turnTexture, 21, 48, 14, 14);
+        turnE2.flip(false, true);
+        turnE3 = new TextureRegion(turnTexture, 21, 63, 14, 14);
+        turnE3.flip(false, true);
+
+        turnIndicator = new TextureRegion(turnTexture, 24, 84, 12, 7);
+        turnIndicator.flip(true, true);
+
+        buttonBar = new TextureRegion(buttonBarTexture, 0, 0, 360, 32);
+        attackButtonUp = new TextureRegion(buttonBarTexture, 0, 35, 20, 20);
+        attackButtonUp.flip(false, true);
+        attackButtonDown = new TextureRegion(buttonBarTexture, 0, 58, 20, 20);
+        attackButtonDown.flip(false, true);
+
+        int attackSize = 32;
+        attackRegions = new TextureRegion[] {
+                new TextureRegion(attack, attackSize*0, 0, attackSize, attackSize),
+                new TextureRegion(attack, attackSize*1, 0, attackSize, attackSize),
+                new TextureRegion(attack, attackSize*2, 0, attackSize, attackSize),
+                new TextureRegion(attack, attackSize*3, 0, attackSize, attackSize),
+                new TextureRegion(attack, attackSize*4, 0, attackSize, attackSize),
+                new TextureRegion(attack, attackSize*5, 0, attackSize, attackSize)
+        };
+
+        for(int i = 0; i < attackRegions.length ; i++){
+            attackRegions[i].flip(false, true);
+        }
+
+        attackAnimation = new Animation(0.1f, attackRegions);
+        attackAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+
 
         lennethTexture = new Texture(Gdx.files.internal("characters/lenneth.png"));
         lennethRegions = new TextureRegion[] {
@@ -94,7 +140,9 @@ public class AssetLoader {
         arena.getTexture().dispose();
         monsters.dispose();
         outlaw.dispose();
-        buttonBar.dispose();
+        buttonBarTexture.dispose();
         selection.dispose();
+        turnTexture.dispose();
+        attack.dispose();
     }
 }

@@ -10,13 +10,63 @@ import java.util.List;
 public class BattleController {
 
     private BattleRenderer renderer;
+    private TurnHandler turnHandler;
 
     private Character[] monsters;
     private Character[] playerCharacters;
     private List<BattleCharacter> battleCharacters;
 
-    public BattleController(){
+    private BattleState currentState;
 
+    private BattleCharacter selectedCharacter;
+
+    public void doAttack() {
+        attack(turnHandler.getCharacterReady(), selectedCharacter);
+    }
+    public void endTurn(){
+        turnHandler.endTurn();
+        selectedCharacter = null;
+
+    }
+    private void attack(BattleCharacter attacker, BattleCharacter defender) {
+        currentState = BattleState.ATTACKING;
+        renderer.drawAttack(attacker, defender);
+    }
+
+
+    public int applyDamage(BattleCharacter attacker, BattleCharacter defender){
+        int damage = attacker.getCharacter().getDamage() - defender.getCharacter().getDefense();
+        defender.takeDamage(damage);
+        if(defender.getActualHp() == 0){
+            defender.setAlive(false);
+        }
+        return damage;
+    }
+
+    public void setSelectedCharacter(BattleCharacter selectedCharacter) {
+        this.selectedCharacter = selectedCharacter;
+    }
+
+    public BattleCharacter getSelectedCharacter() {
+        return selectedCharacter;
+    }
+
+    public boolean isAttacking() {
+        return currentState.equals(BattleState.ATTACKING);
+    }
+
+
+    public enum BattleState {
+        PLAYER_TURN, ENEMY_TURN, RUNNING, ATTACKING
+    }
+
+    public BattleController(){
+        currentState = BattleState.RUNNING;
+        turnHandler = new TurnHandler(this);
+        initCharacters();
+    }
+
+    private void initCharacters() {
         playerCharacters = new Character[]{
                 new Outlaw(),
                 new Outlaw()
@@ -50,7 +100,7 @@ public class BattleController {
     }
 
     public void update(float delta){
-
+        turnHandler.update(delta);
     }
 
     public BattleRenderer getRenderer() {
@@ -64,4 +114,17 @@ public class BattleController {
     public List<BattleCharacter> getBattleCharacters() {
         return battleCharacters;
     }
+
+    public BattleState getCurrentState() {
+        return currentState;
+    }
+
+    public void setCurrentState(BattleState currentState) {
+        this.currentState = currentState;
+    }
+
+    public boolean isPlayerTurn() {
+        return currentState.equals(BattleState.PLAYER_TURN);
+    }
+
 }

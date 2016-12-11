@@ -2,24 +2,42 @@ package com.farguito.sarlanga.battle;
 
 import com.badlogic.gdx.InputProcessor;
 import com.farguito.sarlanga.actors.Character;
+import com.farguito.sarlanga.helpers.AssetLoader;
 import com.farguito.sarlanga.ui.SimpleButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class BattleInputHandler implements InputProcessor {
 
     private List<SimpleButton> menuButtons;
+
+    private SimpleButton attackButton;
+    private SimpleButton skillButton;
+    private SimpleButton itemButton;
+    private SimpleButton defendButton;
+
     private BattleController controller;
 
     private float scaleFactorX;
     private float scaleFactorY;
 
-    public BattleInputHandler(BattleController controller, float scaleFactorX,
+    public BattleInputHandler(BattleController controller, float gameHeight, float scaleFactorX,
                               float scaleFactorY) {
         this.controller = controller;
         this.scaleFactorX = scaleFactorX;
         this.scaleFactorY = scaleFactorY;
+
+        menuButtons = new ArrayList<SimpleButton>();
+        attackButton = new SimpleButton(
+                10, gameHeight-AssetLoader.attackButtonUp.getRegionHeight()-10,
+                AssetLoader.attackButtonUp.getRegionWidth(),
+                AssetLoader.attackButtonUp.getRegionHeight(),
+                AssetLoader.attackButtonUp,
+                AssetLoader.attackButtonDown);
+        menuButtons.add(attackButton);
+
     }
 
     @Override
@@ -43,21 +61,27 @@ public class BattleInputHandler implements InputProcessor {
         screenX = scaleX(screenX);
         screenY = scaleY(screenY);
 
-        for(BattleCharacter battleCharacter : controller.getRenderer().getBattleCharacters()){
-            System.out.println(battleCharacter.getBounds());
-            if(battleCharacter.getBounds().contains(screenX, screenY)){
-                battleCharacter.setSelected(true);
-            } else {
-                battleCharacter.setSelected(false);
+        if (controller.isPlayerTurn()) {
+            for (BattleCharacter battleCharacter : controller.getBattleCharacters()) {
+                if(battleCharacter.isAlive() && battleCharacter.isTouchDown(screenX, screenY)){
+                    controller.setSelectedCharacter(battleCharacter);
+                }
+            }
+            if(attackButton.isTouchDown(screenX, screenY)){
+                if(controller.getSelectedCharacter() != null)
+                    controller.doAttack();
             }
         }
-        System.out.println(screenX);
-        System.out.println(screenY);
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        screenX = scaleX(screenX);
+        screenY = scaleY(screenY);
+
+        attackButton.isTouchUp(screenX, screenY);
+
         return false;
     }
 
@@ -85,4 +109,7 @@ public class BattleInputHandler implements InputProcessor {
         return (int) (screenY / scaleFactorY);
     }
 
+    public List<SimpleButton> getMenuButtons() {
+        return menuButtons;
+    }
 }

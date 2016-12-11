@@ -24,8 +24,8 @@ public class BattleScreen implements Screen {
         int midPointY = (int) (gameHeight / 2);
 
         controller = new BattleController();
+        Gdx.input.setInputProcessor(new BattleInputHandler(controller, gameHeight, screenWidth / gameWidth, screenHeight / gameHeight));
         renderer = new BattleRenderer(controller, (int) gameHeight, midPointY);
-        Gdx.input.setInputProcessor(new BattleInputHandler(controller, screenWidth / gameWidth, screenHeight / gameHeight));
         controller.setRenderer(renderer);
 
     }

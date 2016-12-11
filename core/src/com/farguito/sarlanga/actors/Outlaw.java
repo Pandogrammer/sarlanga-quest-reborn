@@ -5,7 +5,7 @@ import static com.farguito.sarlanga.battle.TextureHelper.CharacterCode.OUTLAW;
 public class Outlaw extends Character {
 
     public Outlaw() {
-        super(100, 10, 5, 10, 3, 10, OUTLAW);
+        super(100, 10, 5, 1, 3, 10, OUTLAW);
     }
 
 }
