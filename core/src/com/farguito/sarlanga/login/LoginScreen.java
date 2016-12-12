@@ -63,4 +63,8 @@ public class LoginScreen implements Screen {
     public void dispose() {
 
     }
+
+    public SarlangaQuest getGame(){
+        return game;
+    }
 }

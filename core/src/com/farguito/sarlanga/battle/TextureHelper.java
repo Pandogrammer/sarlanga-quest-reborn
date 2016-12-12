@@ -10,7 +10,7 @@ public class TextureHelper {
         RAT, OUTLAW
     }
 
-    public TextureRegion getRegion(Character character) {
+    public static TextureRegion getRegion(Character character) {
         switch (character.getCode()){
             case RAT    : return AssetLoader.rat;
             case OUTLAW : return AssetLoader.outlawStanding;

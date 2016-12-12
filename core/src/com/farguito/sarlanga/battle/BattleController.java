@@ -3,6 +3,7 @@ package com.farguito.sarlanga.battle;
 import com.farguito.sarlanga.actors.Character;
 import com.farguito.sarlanga.actors.Outlaw;
 import com.farguito.sarlanga.actors.Rat;
+import com.farguito.sarlanga.domain.UserConnector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,6 @@ public class BattleController {
     private BattleState currentState;
 
     private BattleCharacter selectedCharacter;
-    private Object selectedCharacters;
 
     public void doAttack() {
         attack(turnHandler.getCharacterReady(), selectedCharacter);
@@ -66,9 +66,17 @@ public class BattleController {
         screen.goMenu();
     }
 
-    public void getSelectedCharacters() {
-        BattleConnector conn = new BattleConnector();
-        //conn.getSelectedCharacters();
+    private void initSelectedCharacters() {
+        UserConnector conn = new UserConnector();
+        playerCharacters = conn.getSelectedCharacters();
+    }
+    private void initEnemyCharacters(){
+        monsters = new Character[]{
+                new Rat()
+//                ,
+//                new Rat(),
+//                new Rat()
+        };
     }
 
 
@@ -85,18 +93,9 @@ public class BattleController {
 
     private void initCharacters() {
 
-        getSelectedCharacters();
-        playerCharacters = new Character[]{
-                new Outlaw(),
-                new Outlaw()
-        };
+        initSelectedCharacters();
+        initEnemyCharacters();
 
-        monsters = new Character[]{
-                new Rat()
-//                ,
-//                new Rat(),
-//                new Rat()
-        };
 
         battleCharacters = new ArrayList<BattleCharacter>();
 

@@ -91,7 +91,11 @@ public class LoginInputHandler implements InputProcessor {
         if(!controller.isMenu()) {
             if(controller.getBackButton().isTouchUp(screenX, screenY))
                 controller.goMenu();
-            controller.getConfirmButton().isTouchUp(screenX, screenY);
+            if(controller.getConfirmButton().isTouchUp(screenX, screenY)){
+                if(controller.isRegister()) controller.doRegister();
+                else if(controller.isLogin()) controller.doLogin();
+            }
+
         }
         return false;
     }
