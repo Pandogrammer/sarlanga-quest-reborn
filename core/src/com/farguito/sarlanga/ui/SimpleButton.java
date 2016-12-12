@@ -2,7 +2,9 @@ package com.farguito.sarlanga.ui;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Shape2D;
 
 public class SimpleButton {
 
@@ -11,11 +13,25 @@ public class SimpleButton {
     private TextureRegion buttonUp;
     private TextureRegion buttonDown;
 
-    private Rectangle bounds;
+    private Shape2D bounds;
 
     private boolean isPressed = false;
 
-    public SimpleButton(float x, float y, float width, float height,
+    private Type type;
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public enum Type {
+        CIRCLE,  RECTANGLE
+    }
+
+    public SimpleButton(Type type, float x, float y, float width, float height,
                         TextureRegion buttonUp, TextureRegion buttonDown) {
         this.x = x;
         this.y = y;
@@ -23,8 +39,16 @@ public class SimpleButton {
         this.height = height;
         this.buttonUp = buttonUp;
         this.buttonDown = buttonDown;
+        this.type = type;
 
-        bounds = new Rectangle(x, y, width, height);
+        switch (type) {
+            case CIRCLE:
+                bounds = new Circle(x + width / 2, y + height / 2, width / 2);
+                break;
+            case RECTANGLE:
+                bounds = new Rectangle(x, y, width, height);
+                break;
+        }
 
     }
 
@@ -61,6 +85,17 @@ public class SimpleButton {
         // Whenever a finger is released, we will cancel any presses.
         isPressed = false;
         return false;
+    }
+
+    public void setPosition(float x, float y){
+        this.x = x;
+        this.y = y;
+        switch(type){
+            case CIRCLE: ((Circle) bounds).setPosition(x, y);
+                break;
+            case RECTANGLE: ((Rectangle) bounds).setPosition(x, y);
+                break;
+        }
     }
 
 }

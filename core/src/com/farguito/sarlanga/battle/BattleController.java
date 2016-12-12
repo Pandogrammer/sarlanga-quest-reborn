@@ -9,6 +9,8 @@ import java.util.List;
 
 public class BattleController {
 
+    private BattleScreen screen;
+
     private BattleRenderer renderer;
     private TurnHandler turnHandler;
 
@@ -19,6 +21,7 @@ public class BattleController {
     private BattleState currentState;
 
     private BattleCharacter selectedCharacter;
+    private Object selectedCharacters;
 
     public void doAttack() {
         attack(turnHandler.getCharacterReady(), selectedCharacter);
@@ -55,27 +58,44 @@ public class BattleController {
         return currentState.equals(BattleState.ATTACKING);
     }
 
-
-    public enum BattleState {
-        PLAYER_TURN, ENEMY_TURN, RUNNING, ATTACKING
+    public boolean battleHasEnded() {
+        return currentState.equals(BattleState.DEFEAT) || currentState.equals(BattleState.VICTORY);
     }
 
-    public BattleController(){
+    public void goMenu() {
+        screen.goMenu();
+    }
+
+    public void getSelectedCharacters() {
+        BattleConnector conn = new BattleConnector();
+        //conn.getSelectedCharacters();
+    }
+
+
+    public enum BattleState {
+        PLAYER_TURN, ENEMY_TURN, RUNNING, DEFEAT, VICTORY, CHECK_FINISH, ATTACKING
+    }
+
+    public BattleController(BattleScreen screen){
+        this.screen = screen;
         currentState = BattleState.RUNNING;
         turnHandler = new TurnHandler(this);
         initCharacters();
     }
 
     private void initCharacters() {
+
+        getSelectedCharacters();
         playerCharacters = new Character[]{
                 new Outlaw(),
                 new Outlaw()
         };
 
         monsters = new Character[]{
-                new Rat(),
-                new Rat(),
                 new Rat()
+//                ,
+//                new Rat(),
+//                new Rat()
         };
 
         battleCharacters = new ArrayList<BattleCharacter>();
@@ -100,7 +120,41 @@ public class BattleController {
     }
 
     public void update(float delta){
-        turnHandler.update(delta);
+        switch (currentState) {
+            case CHECK_FINISH:
+                checkFinish();
+            case RUNNING:
+                turnHandler.updateRunning();
+                break;
+            case ENEMY_TURN:
+                turnHandler.enemyTurn();
+                break;
+            default:
+        }
+    }
+
+    private void checkFinish() {
+        boolean defeat = true;
+        boolean victory = true;
+        for (BattleCharacter battleCharacter : battleCharacters) {
+            if (battleCharacter.isPlayerCharacter()) {
+                if (battleCharacter.isAlive())
+                    defeat = false;
+            } else {
+                if (battleCharacter.isAlive())
+                    victory = false;
+            }
+        }
+
+        if (defeat) {
+            currentState = BattleState.DEFEAT;
+            renderer.prepareEndMessage(false);
+        } else if (victory) {
+            currentState = BattleState.VICTORY;
+            renderer.prepareEndMessage(true);
+        } else {
+            currentState = BattleState.RUNNING;
+        }
     }
 
     public BattleRenderer getRenderer() {

@@ -1,9 +1,6 @@
 package com.farguito.sarlanga.menu;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.farguito.sarlanga.battle.BattleScreen;
-import com.farguito.sarlanga.helpers.AssetLoader;
 import com.farguito.sarlanga.ui.SimpleButton;
 
 import java.util.List;

@@ -17,31 +17,28 @@ public class TurnHandler {
     }
 
     public void update(float delta){
-        switch (controller.getCurrentState()) {
-            case RUNNING:
-                updateRunning();
-                break;
-            case PLAYER_TURN:
-                break;
-            case ENEMY_TURN:
-                if(characterReady.isAlive()) {
-                    controller.setSelectedCharacter(controller.getBattleCharacters().get(
-                            ThreadLocalRandom.current().nextInt(0, 2)));
-                    controller.doAttack();
-                } else {
-                    characterReady.endTurn();
-                    controller.setCurrentState(RUNNING);
-                }
-                break;
-        }
-
     }
 
-    private void updateRunning() {
+    public void enemyTurn() {
+        if(characterReady.isAlive()) {
+            int selectedCharacter = ThreadLocalRandom.current().nextInt(0, 2);
+
+            if(!controller.getBattleCharacters().get(selectedCharacter).isAlive())
+                selectedCharacter = (selectedCharacter+1)%2;
+            controller.setSelectedCharacter(
+                    controller.getBattleCharacters().get(selectedCharacter));
+            controller.doAttack();
+        } else {
+            endTurn();
+        }
+    }
+
+    public void updateRunning() {
         int i = 0;
         while(controller.getCurrentState().equals(RUNNING)
                 && i < controller.getBattleCharacters().size()){
-            controller.getBattleCharacters().get(i).updateTurn();
+            if(controller.getBattleCharacters().get(i).isAlive())
+                controller.getBattleCharacters().get(i).updateTurn();
 
             if(controller.getBattleCharacters().get(i).isTurnReady()) {
                 characterReady = controller.getBattleCharacters().get(i);
@@ -60,6 +57,6 @@ public class TurnHandler {
 
     public void endTurn() {
         getCharacterReady().endTurn();
-        controller.setCurrentState(RUNNING);
+        controller.setCurrentState(CHECK_FINISH);
     }
 }

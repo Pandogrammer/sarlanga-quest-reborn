@@ -16,7 +16,7 @@ public class CharacterNameInputListener implements TextInputListener {
 
     @Override
     public void input (String text) {
-            controller.getUsername().setText(text);
+            //controller.getUsername().setText(text);
     }
 
     @Override

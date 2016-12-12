@@ -4,18 +4,22 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class AssetLoader {
-    public static BitmapFont text;
+    public static BitmapFont text, endBattleText;
+
     public static Skin textSkin;
 
-    public static Texture explosionTexture, lennethTexture, outlaw, monsters, splash, buttonBarTexture, selection, turnTexture, attack;
+    public static Texture explosionTexture, lennethTexture, outlaw, monsters, splash, buttonBarTexture,
+            selection, turnTexture, attack, loginButtons;
 
     public static TextureRegion outlawStanding, rat, arena, turnBar, turnP1, turnP2, turnE1, turnE2, turnE3, turnIndicator, buttonBar,
             attackButtonUp, attackButtonDown, skillButtonUp, skillButtonDown,
-            itemButtonUp, itemButtonDown, defendButtonUp, defendButtonDown;
+            itemButtonUp, itemButtonDown, defendButtonUp, defendButtonDown,
+            backButtonUp, backButtonDown, confirmButtonUp, confirmButtonDown;
 
     public static TextureRegion[] explosionRegions, outlawRegions, lennethRegions, attackRegions;
 
@@ -24,9 +28,13 @@ public class AssetLoader {
 
     public static void load() {
         text = new BitmapFont(Gdx.files.internal("data/text.fnt"), true);
+        endBattleText = new BitmapFont(Gdx.files.internal("data/text.fnt"), true);
 
         textSkin = new Skin(Gdx.files.internal("data/uiskin.json"));
+
         splash = new Texture(Gdx.files.internal("data/splash.png"));
+
+        loginButtons = new Texture(Gdx.files.internal("data/login_buttons.png"));
 
         monsters = new Texture(Gdx.files.internal("monsters/monsters.png"));
         outlaw = new Texture(Gdx.files.internal("characters/outlaw.png"));
@@ -35,6 +43,13 @@ public class AssetLoader {
         turnTexture = new Texture(Gdx.files.internal("battle/turn_bar.png"));
         selection = new Texture(Gdx.files.internal("battle/selection.png"));
         attack = new Texture(Gdx.files.internal("battle/attack.png"));
+
+
+        backButtonUp = new TextureRegion(loginButtons, 0, 0, 50, 50);
+        backButtonDown = new TextureRegion(loginButtons, 0, 50, 50, 50);
+        confirmButtonUp = new TextureRegion(loginButtons, 50, 0, 50, 50);
+        confirmButtonDown = new TextureRegion(loginButtons, 50, 50, 50, 50);
+
 
         arena = new TextureRegion(new Texture(Gdx.files.internal("battle/arena.png")));
         arena.flip(false, true);
@@ -57,9 +72,9 @@ public class AssetLoader {
         turnIndicator.flip(true, true);
 
         buttonBar = new TextureRegion(buttonBarTexture, 0, 0, 360, 32);
-        attackButtonUp = new TextureRegion(buttonBarTexture, 0, 35, 20, 20);
+        attackButtonUp = new TextureRegion(buttonBarTexture, 98, 34, 33, 33);
         attackButtonUp.flip(false, true);
-        attackButtonDown = new TextureRegion(buttonBarTexture, 0, 58, 20, 20);
+        attackButtonDown = new TextureRegion(buttonBarTexture, 137, 34, 33, 33);
         attackButtonDown.flip(false, true);
 
         int attackSize = 32;
@@ -132,6 +147,7 @@ public class AssetLoader {
 
     public static void dispose() {
         text.dispose();
+        endBattleText.dispose();
         textSkin.dispose();
         splash.dispose();
         lennethTexture.dispose();
@@ -144,5 +160,6 @@ public class AssetLoader {
         selection.dispose();
         turnTexture.dispose();
         attack.dispose();
+        loginButtons.dispose();
     }
 }

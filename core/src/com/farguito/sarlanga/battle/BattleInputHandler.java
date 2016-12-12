@@ -1,7 +1,6 @@
 package com.farguito.sarlanga.battle;
 
 import com.badlogic.gdx.InputProcessor;
-import com.farguito.sarlanga.actors.Character;
 import com.farguito.sarlanga.helpers.AssetLoader;
 import com.farguito.sarlanga.ui.SimpleButton;
 
@@ -31,6 +30,7 @@ public class BattleInputHandler implements InputProcessor {
 
         menuButtons = new ArrayList<SimpleButton>();
         attackButton = new SimpleButton(
+                SimpleButton.Type.CIRCLE,
                 10, gameHeight-AssetLoader.attackButtonUp.getRegionHeight()-10,
                 AssetLoader.attackButtonUp.getRegionWidth(),
                 AssetLoader.attackButtonUp.getRegionHeight(),
@@ -71,6 +71,8 @@ public class BattleInputHandler implements InputProcessor {
                 if(controller.getSelectedCharacter() != null)
                     controller.doAttack();
             }
+        } else if (controller.battleHasEnded()){
+            controller.goMenu();
         }
         return false;
     }

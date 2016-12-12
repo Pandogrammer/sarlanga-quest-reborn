@@ -1,10 +1,12 @@
 package com.farguito.sarlanga.battle;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -13,6 +15,7 @@ import com.farguito.sarlanga.SarlangaQuest;
 import com.farguito.sarlanga.helpers.AssetLoader;
 import com.farguito.sarlanga.tween.BattleCharacterAccessor;
 import com.farguito.sarlanga.tween.SpriteAccessor;
+import com.farguito.sarlanga.ui.CustomText;
 import com.farguito.sarlanga.ui.SimpleButton;
 
 import java.util.ArrayList;
@@ -34,7 +37,6 @@ public class BattleRenderer {
 
     private BattleController controller;
     private OrthographicCamera cam;
-    private ShapeRenderer shapeRenderer;
 
     private TextureHelper textureHelper;
 
@@ -46,6 +48,7 @@ public class BattleRenderer {
     private Animation attack;
 
     private BitmapFont text;
+    private BitmapFont endBattleText;
     private int damageDone;
 
     private int midPointY;
@@ -59,6 +62,8 @@ public class BattleRenderer {
     // Buttons
     private List<SimpleButton> menuButtons;
     private boolean drawAttackAnimation;
+
+    private CustomText endMessage;
 
     public BattleRenderer(BattleController controller, int gameHeight, int midPointY) {
         this.controller = controller;
@@ -75,8 +80,6 @@ public class BattleRenderer {
 
         batcher = new SpriteBatch();
         batcher.setProjectionMatrix(cam.combined);
-        shapeRenderer = new ShapeRenderer();
-        shapeRenderer.setProjectionMatrix(cam.combined);
         battleCharacters = new ArrayList<BattleCharacter>();
         drawAttackAnimation = false;
         initObjects();
@@ -105,6 +108,7 @@ public class BattleRenderer {
         selection = AssetLoader.selection;
         attack = AssetLoader.attackAnimation;
         text = AssetLoader.text;
+        endBattleText = AssetLoader.endBattleText;
 
         TextureRegion textureRegion;
         for(BattleCharacter battleCharacter : battleCharacters){
@@ -125,14 +129,15 @@ public class BattleRenderer {
 
         batcher.draw(background, 0, 0);
 
-        drawButtonBar();
 
         batcher.enableBlending();
         batcher.draw(turnBar, 20, 30);
 
+        drawButtonBar();
         drawCharacters();
 
-        manager.update(delta);
+        if(controller.battleHasEnded())
+            drawEndMessage();
 
         if(drawAttackAnimation){
             keyFrame += delta;
@@ -142,13 +147,21 @@ public class BattleRenderer {
                     controller.getSelectedCharacter().getWidth(),
                     controller.getSelectedCharacter().getHeight());
 
+            text.setColor(Color.RED);
             text.draw(batcher,
                     ""+damageDone,
-                    controller.getSelectedCharacter().getX()+controller.getSelectedCharacter().getWidth()/2,
-                    controller.getSelectedCharacter().getY()- 30);
+                    controller.getSelectedCharacter().getX()+controller.getSelectedCharacter().getWidth()/3,
+                    controller.getSelectedCharacter().getY()- 20);
         }
 
+        manager.update(delta);
         batcher.end();
+    }
+
+    private void drawEndMessage() {
+        endBattleText.draw(batcher, endMessage.getText(), endMessage.getX(), endMessage.getY());
+        if(endMessage.getY() < gameHeight/2-endBattleText.getLineHeight()/2)
+            endMessage.setY(endMessage.getY()+1);
     }
 
     private void drawButtonBar() {
@@ -225,6 +238,27 @@ public class BattleRenderer {
                     }
                 })
                 .start(manager);
+    }
+
+    public void prepareEndMessage(boolean victory){
+        GlyphLayout glyphLayout = new GlyphLayout();
+        String message;
+
+        if(victory) {
+            endBattleText.setColor(Color.GOLD);
+            message = "VICTORY";
+        }else{
+            endBattleText.setColor(Color.GRAY);
+            message = "DEFEAT";
+        }
+
+        endBattleText.getData().setScale(2);
+
+        glyphLayout.setText(endBattleText, message);
+        float textX = SarlangaQuest.GAME_WIDTH/2-glyphLayout.width/2;
+        float textY = 0f;
+
+        endMessage = new CustomText(endBattleText, message, textX, textY);
     }
 
 }

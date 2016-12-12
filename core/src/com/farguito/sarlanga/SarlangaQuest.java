@@ -4,6 +4,7 @@ package com.farguito.sarlanga;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.farguito.sarlanga.helpers.AssetLoader;
+import com.farguito.sarlanga.login.LoginScreen;
 import com.farguito.sarlanga.menu.MenuScreen;
 
 public class SarlangaQuest extends Game {
@@ -14,7 +15,7 @@ public class SarlangaQuest extends Game {
 	public void create() {
         Gdx.input.setCatchBackKey(true);
 		AssetLoader.load();
-		setScreen(new MenuScreen(this));
+		setScreen(new LoginScreen(this));
 	}
 
 	@Override

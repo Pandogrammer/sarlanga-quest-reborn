@@ -1,24 +1,19 @@
-package com.farguito.sarlanga.battle;
+package com.farguito.sarlanga.login;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.farguito.sarlanga.SarlangaQuest;
-import com.farguito.sarlanga.menu.MenuScreen;
+import com.farguito.sarlanga.menu.MenuInputHandler;
 
-/**
- * Created by Latharia on 06/12/2016.
- */
-
-public class BattleScreen implements Screen {
+public class LoginScreen implements Screen {
 
     private SarlangaQuest game;
-    private BattleRenderer renderer;
-    private BattleController controller;
-    private float runTime;
+    private LoginRenderer renderer;
+    private LoginController controller;
 
-
-    public BattleScreen (SarlangaQuest game){
+    public LoginScreen(SarlangaQuest game){
         this.game = game;
+
         float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
 
@@ -26,12 +21,12 @@ public class BattleScreen implements Screen {
         float gameHeight = screenHeight / (screenWidth / gameWidth);
         int midPointY = (int) (gameHeight / 2);
 
-        controller = new BattleController(this);
-        Gdx.input.setInputProcessor(new BattleInputHandler(controller, gameHeight, screenWidth / gameWidth, screenHeight / gameHeight));
-        renderer = new BattleRenderer(controller, (int) gameHeight, midPointY);
+        controller = new LoginController(this, midPointY);
+        renderer = new LoginRenderer(controller, (int) gameWidth, (int) gameHeight, midPointY);
+        Gdx.input.setInputProcessor(new LoginInputHandler(controller, gameHeight, screenWidth / gameWidth, screenHeight / gameHeight));
         controller.setRenderer(renderer);
-
     }
+
 
     @Override
     public void show() {
@@ -40,9 +35,8 @@ public class BattleScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        runTime += delta;
         controller.update(delta);
-        renderer.render(delta, runTime);
+        renderer.render(delta);
     }
 
     @Override
@@ -68,9 +62,5 @@ public class BattleScreen implements Screen {
     @Override
     public void dispose() {
 
-    }
-
-    public void goMenu() {
-        game.setScreen(new MenuScreen(game));
     }
 }
