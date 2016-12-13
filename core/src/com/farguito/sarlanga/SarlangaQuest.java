@@ -10,8 +10,8 @@ import com.farguito.sarlanga.domain.User;
 public class SarlangaQuest extends Game {
 
 	public static final int GAME_WIDTH = 360;
-	//public static final String url = "http://192.168.0.7:8080/";
-	public static final String url = "https://192.168.0.7:8080/";
+//	public static final String url = "http://192.168.0.7:8080/";
+	public static final String url = "https://sarlanga-quest.herokuapp.com/";
 
 	private User user;
 
@@ -19,7 +19,7 @@ public class SarlangaQuest extends Game {
 	public void create() {
         Gdx.input.setCatchBackKey(true);
 		AssetLoader.load();
-		setScreen(new LoginScreen(this));
+        setScreen(new LoginScreen(this));
 	}
 
 	@Override

@@ -31,7 +31,7 @@ public class BattleInputHandler implements InputProcessor {
         menuButtons = new ArrayList<SimpleButton>();
         attackButton = new SimpleButton(
                 SimpleButton.Type.CIRCLE,
-                10, gameHeight-AssetLoader.attackButtonUp.getRegionHeight()-10,
+                130, gameHeight-AssetLoader.attackButtonUp.getRegionHeight()-10,
                 AssetLoader.attackButtonUp.getRegionWidth(),
                 AssetLoader.attackButtonUp.getRegionHeight(),
                 AssetLoader.attackButtonUp,

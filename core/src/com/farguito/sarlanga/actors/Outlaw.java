@@ -1,11 +1,18 @@
 package com.farguito.sarlanga.actors;
 
-import static com.farguito.sarlanga.battle.TextureHelper.CharacterCode.OUTLAW;
+import static com.farguito.sarlanga.helpers.TextureHelper.CharacterCode.OUTLAW;
 
 public class Outlaw extends Character {
 
+    private static int hp = 40;
+    private static int damage = 15;
+    private static int defense = 5;
+    private static float speed = 21f;
+    private static int minTurnCounter = 2;
+    private static int maxTurnCounter = 5;
+
     public Outlaw() {
-        super(100, 10, 5, 1, 3, 10, OUTLAW);
+        super(hp, damage, defense, speed, minTurnCounter, maxTurnCounter, OUTLAW);
     }
 
 }

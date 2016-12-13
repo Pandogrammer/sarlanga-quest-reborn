@@ -26,7 +26,7 @@ public class MenuScreen implements Screen {
 
         controller = new MenuController(this, midPointY);
         renderer = new MenuRenderer(controller, (int) gameWidth, (int) gameHeight, midPointY);
-        Gdx.input.setInputProcessor(new MenuInputHandler(controller, screenWidth / gameWidth, screenHeight / gameHeight));
+        Gdx.input.setInputProcessor(new MenuInputHandler(controller, gameHeight, screenWidth / gameWidth, screenHeight / gameHeight));
         controller.setRenderer(renderer);
     }
 
@@ -71,7 +71,7 @@ public class MenuScreen implements Screen {
         return game;
     }
 
-    public void startBattle() {
-        game.setScreen(new BattleScreen(game));
+    public void startBattle(int level) {
+        game.setScreen(new BattleScreen(game, level));
     }
 }

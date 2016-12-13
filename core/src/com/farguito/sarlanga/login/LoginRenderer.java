@@ -25,12 +25,6 @@ public class LoginRenderer {
 
     private int midPointY;
 
-    // Game Objects
-
-    // Game Assets
-
-    // Tween stuff
-
     // Buttons
     private List<SimpleButton> menuButtons;
 

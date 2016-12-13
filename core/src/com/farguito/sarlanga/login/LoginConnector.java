@@ -48,7 +48,7 @@ public class LoginConnector implements HttpResponseListener {
 
     public void register(String username, String password) throws JsonProcessingException {
         operation = REGISTER;
-        // LibGDX NET CLASS
+        registerResponse = null;
         HttpRequest httpPost = new HttpRequest(Net.HttpMethods.POST);
         httpPost.setUrl(url+"user/register");
         httpPost.setHeader("Content-Type", "application/json");
@@ -59,7 +59,7 @@ public class LoginConnector implements HttpResponseListener {
 
     public void login(String username, String password) throws JsonProcessingException {
         operation = LOGIN;
-        // LibGDX NET CLASS
+        loginResponse = null;
         HttpRequest httpPost = new HttpRequest(Net.HttpMethods.POST);
         httpPost.setUrl(url+"user/login");
         httpPost.setHeader("Content-Type", "application/json");

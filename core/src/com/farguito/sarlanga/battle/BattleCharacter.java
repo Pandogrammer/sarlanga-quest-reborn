@@ -16,7 +16,7 @@ public class BattleCharacter {
 
     private Character character;
     private TextureRegion textureRegion;
-    private int turnCounter;
+    private float turnCounter;
 
     private boolean isSelected;
     private boolean isPlayerCharacter;
@@ -95,7 +95,7 @@ public class BattleCharacter {
         turnCounter = 0;
     }
 
-    public int getTurnCounter() {
+    public float getTurnCounter() {
         return turnCounter;
     }
 

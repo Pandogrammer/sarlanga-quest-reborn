@@ -11,8 +11,9 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.farguito.sarlanga.SarlangaQuest;
-import com.farguito.sarlanga.helpers.AssetLoader;
+import com.farguito.sarlanga.helpers.*;
 import com.farguito.sarlanga.tween.BattleCharacterAccessor;
 import com.farguito.sarlanga.tween.SpriteAccessor;
 import com.farguito.sarlanga.ui.CustomText;
@@ -38,16 +39,24 @@ public class BattleRenderer {
     private BattleController controller;
     private OrthographicCamera cam;
 
-    private TextureHelper textureHelper;
+    private com.farguito.sarlanga.helpers.TextureHelper textureHelper;
 
     private SpriteBatch batcher;
+    private ShapeRenderer shapeRenderer;
 
     private Texture selection;
-    private TextureRegion background, turnBar, turnIndicator, buttonBar;
+    private TextureRegion background, turnBar, turnIndicator;
     private TextureRegion[] turnArrows;
     private Animation attack;
 
+    //lifeBar
+    private Vector2 lifeBar1;
+    private Vector2 lifeBar2;
+    private Vector2 lifeBar3;
+    private Vector2 lifeBar4;
+
     private BitmapFont text;
+    private BitmapFont lifeBarText;
     private BitmapFont endBattleText;
     private int damageDone;
 
@@ -72,14 +81,21 @@ public class BattleRenderer {
         this.midPointY = midPointY;
         this.menuButtons = ((BattleInputHandler) Gdx.input.getInputProcessor())
                 .getMenuButtons();
-        textureHelper = new TextureHelper();
+        textureHelper = new com.farguito.sarlanga.helpers.TextureHelper();
 
+
+        lifeBar1 = new Vector2(0, 150);
+        lifeBar2 = new Vector2(100, 150);
+        lifeBar3 = new Vector2(100, gameHeight);
+        lifeBar4 = new Vector2(0, gameHeight);
 
         cam = new OrthographicCamera();
         cam.setToOrtho(true, SarlangaQuest.GAME_WIDTH, gameHeight);
 
         batcher = new SpriteBatch();
         batcher.setProjectionMatrix(cam.combined);
+        shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setProjectionMatrix(cam.combined);
         battleCharacters = new ArrayList<BattleCharacter>();
         drawAttackAnimation = false;
         initObjects();
@@ -95,7 +111,6 @@ public class BattleRenderer {
     }
     private void initAssets() {
         background = AssetLoader.arena;
-        buttonBar = AssetLoader.buttonBar;
         turnBar = AssetLoader.turnBar;
         turnArrows = new TextureRegion[]{
                 AssetLoader.turnP1,
@@ -109,6 +124,7 @@ public class BattleRenderer {
         attack = AssetLoader.attackAnimation;
         text = AssetLoader.text;
         endBattleText = AssetLoader.endBattleText;
+        lifeBarText = AssetLoader.lifeBarText;
 
         TextureRegion textureRegion;
         for(BattleCharacter battleCharacter : battleCharacters){
@@ -124,15 +140,32 @@ public class BattleRenderer {
 
     public void render(float delta, float runTime){
 
+
         batcher.begin();
         batcher.disableBlending();
 
         batcher.draw(background, 0, 0);
 
+        batcher.end();
 
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(210 / 255.0f, 200 / 255.0f, 145 / 255.0f, 0.5f);
+        shapeRenderer.rect(lifeBar1.x, lifeBar1.y, lifeBar2.x, gameHeight-lifeBar2.y);
+
+        shapeRenderer.setColor(240 / 255.0f, 230 / 255.0f, 175 / 255.0f, 0.5f);
+        shapeRenderer.rectLine(lifeBar1, lifeBar2.cpy().add(1.5f, 0), 3);
+        shapeRenderer.rectLine(lifeBar2, lifeBar3, 3);
+        shapeRenderer.rectLine(lifeBar3, lifeBar4, 3);
+        shapeRenderer.rectLine(lifeBar4, lifeBar1, 3);
+        shapeRenderer.end();
+
+        batcher.begin();
         batcher.enableBlending();
+
+
         batcher.draw(turnBar, 20, 30);
 
+        drawCharactersLife();
         drawButtonBar();
         drawCharacters();
 
@@ -150,13 +183,24 @@ public class BattleRenderer {
             text.setColor(Color.RED);
             text.draw(batcher,
                     ""+damageDone,
-                    controller.getSelectedCharacter().getX()+controller.getSelectedCharacter().getWidth()/3,
+                    controller.getSelectedCharacter().getX()+controller.getSelectedCharacter().getWidth()/4,
                     controller.getSelectedCharacter().getY()- 20);
         }
 
         manager.update(delta);
         batcher.end();
     }
+
+    private void drawCharactersLife() {
+        batcher.draw(turnArrows[0], 5, 160);
+        lifeBarText.draw(batcher, ""+battleCharacters.get(0).getActualHp()+" / "+battleCharacters.get(0).getMaxHp(),
+                        turnArrows[0].getRegionWidth()+10,160);
+        batcher.draw(turnArrows[1], 5, 180);
+        lifeBarText.draw(batcher, ""+battleCharacters.get(1).getActualHp()+" / "+battleCharacters.get(1).getMaxHp(),
+                        turnArrows[1].getRegionWidth()+10,180);
+
+    }
+
 
     private void drawEndMessage() {
         endBattleText.draw(batcher, endMessage.getText(), endMessage.getX(), endMessage.getY());
@@ -168,7 +212,6 @@ public class BattleRenderer {
         for (SimpleButton button : menuButtons) {
             button.draw(batcher);
         }
-
     }
 
     private void drawCharacters() {
@@ -217,8 +260,8 @@ public class BattleRenderer {
         Timeline.createSequence()
                 .push(Tween.to(attacker, POSITION, 0.8f)
                         .target(defender.isPlayerCharacter() ?
-                                        defender.getX()+defender.getWidth() : defender.getX()-defender.getWidth()
-                                , defender.getY())
+                                        defender.getX()+defender.getWidth() : defender.getX()-attacker.getWidth()
+                                , defender.getY()+defender.getHeight()-attacker.getHeight())
                         .setCallback(new TweenCallback() {
                             @Override
                             public void onEvent(int type, BaseTween<?> source) {

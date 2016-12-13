@@ -1,24 +1,26 @@
 package com.farguito.sarlanga.menu;
 
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.farguito.sarlanga.ui.SimpleButton;
+import com.farguito.sarlanga.ui.SimpleTextField;
 
 import java.util.List;
 
 public class MenuInputHandler implements InputProcessor {
 
 
-    private List<SimpleButton> menuButtons;
-    private CharacterNameInputListener inputListener;
     private MenuController controller;
 
     private float scaleFactorX;
     private float scaleFactorY;
+    private float gameHeight;
 
-    public MenuInputHandler(MenuController controller, float scaleFactorX,
+    public MenuInputHandler(MenuController controller, float gameHeight, float scaleFactorX,
                             float scaleFactorY) {
-        inputListener  = new CharacterNameInputListener(controller);
+
         this.controller = controller;
+        this.gameHeight = gameHeight;
         this.scaleFactorX = scaleFactorX;
         this.scaleFactorY = scaleFactorY;
     }
@@ -40,12 +42,44 @@ public class MenuInputHandler implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        controller.startBattle();
+        screenX = scaleX(screenX);
+        screenY = scaleY(screenY);
+
+        screenY = (int) gameHeight-screenY;
+
+
+        if(controller.isMenu()) {
+            if (controller.getMonsterFightButton().isTouchDown(screenX, screenY))
+                controller.goSelectLevel();
+        } else if (controller.isSelectLevel()){
+            for(int i = 0; i < controller.getLevelButtons().size(); i++){
+                if(controller.getLevelButtons().get(i).isTouchDown(screenX,screenY))
+                    controller.setSelectedLevel(i+1);
+            }
+        }
+
+        if(!controller.isMenu()) {
+            controller.getBackButton().isTouchDown(screenX, screenY);
+            controller.getConfirmButton().isTouchDown(screenX, screenY);
+        }
+
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        screenX = scaleX(screenX);
+        screenY = scaleY(screenY);
+
+        screenY = (int) gameHeight-screenY;
+        if(!controller.isMenu()) {
+            if(controller.getBackButton().isTouchUp(screenX, screenY))
+                controller.goMenu();
+            if(controller.getConfirmButton().isTouchUp(screenX, screenY)){
+                if(controller.isSelectLevel()) controller.startBattle();
+            }
+
+        }
         return false;
     }
 
@@ -63,4 +97,13 @@ public class MenuInputHandler implements InputProcessor {
     public boolean scrolled(int amount) {
         return false;
     }
+
+    private int scaleX(int screenX) {
+        return (int) (screenX / scaleFactorX);
+    }
+
+    private int scaleY(int screenY) {
+        return (int) (screenY / scaleFactorY);
+    }
+
 }

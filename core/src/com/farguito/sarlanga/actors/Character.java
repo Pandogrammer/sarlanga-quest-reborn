@@ -1,27 +1,33 @@
 package com.farguito.sarlanga.actors;
 
-import com.badlogic.gdx.math.Vector2;
-import com.farguito.sarlanga.battle.TextureHelper.CharacterCode;
-
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import com.farguito.sarlanga.helpers.TextureHelper.CharacterCode;
 
 /**
  * Created by Latharia on 07/12/2016.
  */
 
-public class Character {
+public abstract class Character {
 
     private int hp;
     private int damage;
     private int defense;
-    private int speed;
+    private float speed;
     private int minTurnCounter;
     private int maxTurnCounter;
 
     private CharacterCode code;
 
-    public Character(int hp, int damage, int defense, int speed, int minTurnCounter, int maxTurnCounter, CharacterCode code) {
+    /**
+     *
+     * @param hp
+     * @param damage
+     * @param defense
+     * @param speed
+     * @param minTurnCounter
+     * @param maxTurnCounter
+     * @param code
+     */
+    public Character(int hp, int damage, int defense, float speed, int minTurnCounter, int maxTurnCounter, CharacterCode code) {
         this.speed = speed;
         this.hp = hp;
         this.damage = damage;
@@ -35,48 +41,24 @@ public class Character {
         return hp;
     }
 
-    public void setHp(int hp) {
-        this.hp = hp;
-    }
-
     public int getDamage() {
         return damage;
-    }
-
-    public void setDamage(int damage) {
-        this.damage = damage;
     }
 
     public int getDefense() {
         return defense;
     }
 
-    public void setDefense(int defense) {
-        this.defense = defense;
-    }
-
-    public int getSpeed() {
+    public float getSpeed() {
         return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
     }
 
     public int getMinTurnCounter() {
         return minTurnCounter;
     }
 
-    public void setMinTurnCounter(int minTurnCounter) {
-        this.minTurnCounter = minTurnCounter;
-    }
-
     public int getMaxTurnCounter() {
         return maxTurnCounter;
-    }
-
-    public void setMaxTurnCounter(int maxTurnCounter) {
-        this.maxTurnCounter = maxTurnCounter;
     }
 
     public CharacterCode getCode() {

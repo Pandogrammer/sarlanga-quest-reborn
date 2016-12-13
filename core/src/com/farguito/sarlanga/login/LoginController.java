@@ -120,10 +120,10 @@ public class LoginController {
                 connection.register(username.getText(), password.getText());
                 com.farguito.sarlanga.domain.User user = null;
                 int tries = 0;
-                int timeout = 10;
+                int timeout = 15;
                 while (user == null && tries < timeout) {
                     user = connection.getRegisterResponse();
-                    Thread.sleep(10);
+                    Thread.sleep(1000);
                     tries++;
                 }
                 if(user != null){
@@ -137,19 +137,16 @@ public class LoginController {
         }
     }
 
-    private void goMenuScreen() {
-        screen.getGame().setScreen(new MenuScreen(screen.getGame()));
-    }
 
     public void doLogin() {
         try {
             connection.login(username.getText(), password.getText());
             com.farguito.sarlanga.domain.User user = null;
             int tries = 0;
-            int timeout = 10;
+            int timeout = 15;
             while(user == null && tries < timeout) {
                 user = connection.getLoginResponse();
-                Thread.sleep(10);
+                Thread.sleep(1000);
                 tries++;
             }
             if(user != null){
@@ -162,6 +159,9 @@ public class LoginController {
         }
     }
 
+    private void goMenuScreen() {
+        screen.getGame().setScreen(new MenuScreen(screen.getGame()));
+    }
 
     public void setRenderer(LoginRenderer renderer) {
         this.renderer = renderer;

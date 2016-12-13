@@ -1,12 +1,17 @@
 package com.farguito.sarlanga.battle;
 
 import com.farguito.sarlanga.actors.Character;
+import com.farguito.sarlanga.actors.Chimera;
 import com.farguito.sarlanga.actors.Outlaw;
+import com.farguito.sarlanga.actors.PurpleBeast;
 import com.farguito.sarlanga.actors.Rat;
+import com.farguito.sarlanga.actors.Tomberi;
+import com.farguito.sarlanga.actors.YellowImp;
 import com.farguito.sarlanga.domain.UserConnector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class BattleController {
 
@@ -22,6 +27,9 @@ public class BattleController {
     private BattleState currentState;
 
     private BattleCharacter selectedCharacter;
+
+    private BattleConnector battleConnector = new BattleConnector();
+    private UserConnector userConnector = new UserConnector();
 
     public void doAttack() {
         attack(turnHandler.getCharacterReady(), selectedCharacter);
@@ -67,16 +75,10 @@ public class BattleController {
     }
 
     private void initSelectedCharacters() {
-        UserConnector conn = new UserConnector();
-        playerCharacters = conn.getSelectedCharacters();
+        playerCharacters = userConnector.getSelectedCharacters();
     }
     private void initEnemyCharacters(){
-        monsters = new Character[]{
-                new Rat()
-//                ,
-//                new Rat(),
-//                new Rat()
-        };
+        monsters = battleConnector.getLevelMonsters(screen.getLevel());
     }
 
 
@@ -150,6 +152,8 @@ public class BattleController {
             renderer.prepareEndMessage(false);
         } else if (victory) {
             currentState = BattleState.VICTORY;
+            if(screen.getGame().getUser().getLevel() == screen.getLevel())
+                userConnector.unlockLevel(screen.getGame().getUser());
             renderer.prepareEndMessage(true);
         } else {
             currentState = BattleState.RUNNING;

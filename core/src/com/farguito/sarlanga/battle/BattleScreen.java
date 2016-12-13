@@ -15,10 +15,12 @@ public class BattleScreen implements Screen {
     private BattleRenderer renderer;
     private BattleController controller;
     private float runTime;
+    private int level;
 
-
-    public BattleScreen (SarlangaQuest game){
+    public BattleScreen (SarlangaQuest game, int level){
         this.game = game;
+        this.level = level;
+
         float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
 
@@ -72,5 +74,13 @@ public class BattleScreen implements Screen {
 
     public void goMenu() {
         game.setScreen(new MenuScreen(game));
+    }
+
+    public int getLevel(){
+        return level;
+    }
+
+    public SarlangaQuest getGame() {
+        return game;
     }
 }

@@ -9,17 +9,19 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class AssetLoader {
-    public static BitmapFont text, endBattleText;
+    public static BitmapFont text, endBattleText, lifeBarText;
 
     public static Skin textSkin;
 
     public static Texture explosionTexture, lennethTexture, outlaw, monsters, splash, buttonBarTexture,
             selection, turnTexture, attack, loginButtons;
 
-    public static TextureRegion outlawStanding, rat, arena, turnBar, turnP1, turnP2, turnE1, turnE2, turnE3, turnIndicator, buttonBar,
+    public static TextureRegion outlawStanding, arena, turnBar, turnP1, turnP2, turnE1, turnE2, turnE3, turnIndicator, buttonBar,
             attackButtonUp, attackButtonDown, skillButtonUp, skillButtonDown,
             itemButtonUp, itemButtonDown, defendButtonUp, defendButtonDown,
             backButtonUp, backButtonDown, confirmButtonUp, confirmButtonDown;
+    //Monsters
+    public static TextureRegion rat, yellowImp, chimera, tomberi, purpleBeast;
 
     public static TextureRegion[] explosionRegions, outlawRegions, lennethRegions, attackRegions;
 
@@ -29,6 +31,7 @@ public class AssetLoader {
     public static void load() {
         text = new BitmapFont(Gdx.files.internal("data/text.fnt"), true);
         endBattleText = new BitmapFont(Gdx.files.internal("data/text.fnt"), true);
+        lifeBarText = new BitmapFont(Gdx.files.internal("data/text.fnt"), true);
 
         textSkin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
@@ -141,6 +144,18 @@ public class AssetLoader {
         rat = new TextureRegion(monsters, 678, 1569, 31, 30);
         rat.flip(false, true);
 
+        yellowImp = new TextureRegion(monsters, 404, 1420, 55, 48);
+        yellowImp.flip(false, true);
+
+        chimera = new TextureRegion(monsters, 17, 1404, 88, 64);
+        chimera.flip(false, true);
+
+        tomberi = new TextureRegion(monsters, 560, 1004, 32, 30);
+        tomberi.flip(false, true);
+
+        purpleBeast = new TextureRegion(monsters, 214, 1091, 56, 48);
+        purpleBeast.flip(false, true);
+
         outlawStanding = new TextureRegion(outlaw, 124, 3, 26, 31);
         outlawStanding.flip(false, true);
     }
@@ -161,5 +176,6 @@ public class AssetLoader {
         turnTexture.dispose();
         attack.dispose();
         loginButtons.dispose();
+        lifeBarText.dispose();
     }
 }

@@ -28,6 +28,13 @@ public class SimpleTextField extends TextField {
         bounds = new Rectangle(x, y, width, height);
     }
 
+    public SimpleTextField(String text, Skin skin){
+        super(text, skin);
+        this.width = this.getWidth();
+        this.height = this.getHeight();
+        bounds = new Rectangle(0, 0, width, height);
+    }
+
     public SimpleTextField(String text, Skin skin, String styleName) {
         super(text, skin, styleName);
     }
@@ -41,7 +48,6 @@ public class SimpleTextField extends TextField {
     }
 
     public boolean isTouchDown(int screenX, int screenY) {
-
         if (bounds.contains(screenX, screenY)) {
             isPressed = true;
             return true;
@@ -66,5 +72,15 @@ public class SimpleTextField extends TextField {
     public void setPosition(float x, float y){
         super.setPosition(x, y);
         bounds.setPosition(x, y);
+    }
+
+    public void setWidth(float width){
+        super.setWidth(width);
+        bounds.setWidth(width);
+    }
+
+    public void setHeight(float height){
+        super.setHeight(height);
+        bounds.setHeight(height);
     }
 }

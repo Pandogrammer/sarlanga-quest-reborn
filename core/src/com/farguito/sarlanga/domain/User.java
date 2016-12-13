@@ -9,6 +9,7 @@ public class User {
     Long id;
     String username;
     String password;
+    Long level;
 
     public User(){
     }
@@ -34,5 +35,13 @@ public class User {
 
     public Long getId() {
         return id;
+    }
+
+    public Long getLevel() {
+        return level;
+    }
+
+    public void setLevel(Long level) {
+        this.level = level;
     }
 }

@@ -1,12 +1,12 @@
 package com.farguito.sarlanga.domain;
 
-import com.badlogic.gdx.Net;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net.*;
 import com.farguito.sarlanga.SarlangaQuest;
 import com.farguito.sarlanga.actors.Character;
 import com.farguito.sarlanga.actors.Outlaw;
-import com.farguito.sarlanga.login.LoginConnector;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.std.StdArraySerializers;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,6 +33,20 @@ public class UserConnector implements HttpResponseListener {
                 new Outlaw(),
                 new Outlaw()
         };
+    }
+
+
+    public void unlockLevel(User user){
+        try {
+            user.setLevel(user.getLevel() + 1);
+            HttpRequest httpPost = new HttpRequest(HttpMethods.POST);
+            httpPost.setUrl(url + "user/unlockLevel");
+            httpPost.setHeader("Content-Type", "application/json");
+            httpPost.setContent(mapper.writeValueAsString(user));
+            Gdx.net.sendHttpRequest(httpPost, UserConnector.this);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
