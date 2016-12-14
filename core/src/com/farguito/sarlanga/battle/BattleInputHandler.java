@@ -38,6 +38,15 @@ public class BattleInputHandler implements InputProcessor {
                 AssetLoader.attackButtonDown);
         menuButtons.add(attackButton);
 
+        skillButton = new SimpleButton(
+                SimpleButton.Type.CIRCLE,
+                180, gameHeight-AssetLoader.skillButtonUp.getRegionHeight()-10,
+                AssetLoader.skillButtonUp.getRegionWidth(),
+                AssetLoader.skillButtonUp.getRegionHeight(),
+                AssetLoader.skillButtonUp,
+                AssetLoader.skillButtonDown);
+        menuButtons.add(skillButton);
+
     }
 
     @Override
@@ -71,6 +80,10 @@ public class BattleInputHandler implements InputProcessor {
                 if(controller.getSelectedCharacter() != null)
                     controller.doAttack();
             }
+            if(skillButton.isTouchDown(screenX, screenY)){
+                if(controller.getSelectedCharacter() != null)
+                    controller.doSkill();
+            }
         } else if (controller.battleHasEnded()){
             controller.goMenu();
         }
@@ -83,6 +96,7 @@ public class BattleInputHandler implements InputProcessor {
         screenY = scaleY(screenY);
 
         attackButton.isTouchUp(screenX, screenY);
+        skillButton.isTouchUp(screenX, screenY);
 
         return false;
     }

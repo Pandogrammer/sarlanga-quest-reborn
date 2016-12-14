@@ -1,11 +1,6 @@
 package com.farguito.sarlanga.menu;
 
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.farguito.sarlanga.ui.SimpleButton;
-import com.farguito.sarlanga.ui.SimpleTextField;
-
-import java.util.List;
 
 public class MenuInputHandler implements InputProcessor {
 
@@ -46,7 +41,6 @@ public class MenuInputHandler implements InputProcessor {
         screenY = scaleY(screenY);
 
         screenY = (int) gameHeight-screenY;
-
 
         if(controller.isMenu()) {
             if (controller.getMonsterFightButton().isTouchDown(screenX, screenY))

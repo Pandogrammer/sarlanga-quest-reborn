@@ -1,10 +1,11 @@
 package com.farguito.sarlanga.helpers;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
@@ -14,21 +15,29 @@ public class AssetLoader {
     public static Skin textSkin;
 
     public static Texture explosionTexture, lennethTexture, outlaw, monsters, splash, buttonBarTexture,
-            selection, turnTexture, attack, loginButtons;
+            selection, turnTexture, attack, loginButtons, title, logoTexture;
 
     public static TextureRegion outlawStanding, arena, turnBar, turnP1, turnP2, turnE1, turnE2, turnE3, turnIndicator, buttonBar,
             attackButtonUp, attackButtonDown, skillButtonUp, skillButtonDown,
             itemButtonUp, itemButtonDown, defendButtonUp, defendButtonDown,
-            backButtonUp, backButtonDown, confirmButtonUp, confirmButtonDown;
+            backButtonUp, backButtonDown, confirmButtonUp, confirmButtonDown, logo;
     //Monsters
-    public static TextureRegion rat, yellowImp, chimera, tomberi, purpleBeast;
+    public static TextureRegion rat, yellowImp, chimera, tomberi, purpleBeast, livingArmor;
 
     public static TextureRegion[] explosionRegions, outlawRegions, lennethRegions, attackRegions;
 
     public static Animation explosionAnimation, outlawStandingAnm, lennetAnimation, attackAnimation;
 
+    public static Sound attackSound, splashSound;
+    public static Music menuTheme, battleTheme;
 
     public static void load() {
+
+        logoTexture = new Texture(Gdx.files.internal("data/logo.png"));
+        logoTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
+        logo = new TextureRegion(logoTexture);
+
         text = new BitmapFont(Gdx.files.internal("data/text.fnt"), true);
         endBattleText = new BitmapFont(Gdx.files.internal("data/text.fnt"), true);
         lifeBarText = new BitmapFont(Gdx.files.internal("data/text.fnt"), true);
@@ -36,6 +45,7 @@ public class AssetLoader {
         textSkin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
         splash = new Texture(Gdx.files.internal("data/splash.png"));
+        title = new Texture(Gdx.files.internal("data/title.png"));
 
         loginButtons = new Texture(Gdx.files.internal("data/login_buttons.png"));
 
@@ -46,6 +56,11 @@ public class AssetLoader {
         turnTexture = new Texture(Gdx.files.internal("battle/turn_bar.png"));
         selection = new Texture(Gdx.files.internal("battle/selection.png"));
         attack = new Texture(Gdx.files.internal("battle/attack.png"));
+
+        attackSound = Gdx.audio.newSound(Gdx.files.internal("sounds/attack.ogg"));
+        splashSound = Gdx.audio.newSound(Gdx.files.internal("sounds/splash.ogg"));
+        menuTheme = Gdx.audio.newMusic(Gdx.files.internal("sounds/menu_theme.wav"));
+        battleTheme = Gdx.audio.newMusic(Gdx.files.internal("sounds/battle_theme.wav"));
 
 
         backButtonUp = new TextureRegion(loginButtons, 0, 0, 50, 50);
@@ -79,6 +94,11 @@ public class AssetLoader {
         attackButtonUp.flip(false, true);
         attackButtonDown = new TextureRegion(buttonBarTexture, 137, 34, 33, 33);
         attackButtonDown.flip(false, true);
+
+        skillButtonUp = new TextureRegion(buttonBarTexture, 179, 34, 33, 33);
+        skillButtonUp.flip(false, true);
+        skillButtonDown = new TextureRegion(buttonBarTexture, 218, 34, 33, 33);
+        skillButtonDown.flip(false, true);
 
         int attackSize = 32;
         attackRegions = new TextureRegion[] {
@@ -158,6 +178,9 @@ public class AssetLoader {
 
         outlawStanding = new TextureRegion(outlaw, 124, 3, 26, 31);
         outlawStanding.flip(false, true);
+
+        livingArmor = new TextureRegion(monsters, 725, 1543, 43, 56);
+        livingArmor.flip(false, true);
     }
 
     public static void dispose() {
@@ -177,5 +200,11 @@ public class AssetLoader {
         attack.dispose();
         loginButtons.dispose();
         lifeBarText.dispose();
+        title.dispose();
+        logoTexture.dispose();
+        splashSound.dispose();
+        attackSound.dispose();
+        menuTheme.dispose();
+        battleTheme.dispose();
     }
 }

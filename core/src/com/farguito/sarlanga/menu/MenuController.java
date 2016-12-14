@@ -1,20 +1,24 @@
 package com.farguito.sarlanga.menu;
 
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.farguito.sarlanga.SarlangaQuest;
 import com.farguito.sarlanga.actors.Character;
+import com.farguito.sarlanga.actors.LivingArmor;
 import com.farguito.sarlanga.actors.Outlaw;
+import com.farguito.sarlanga.actors.Tomberi;
 import com.farguito.sarlanga.domain.User;
 import com.farguito.sarlanga.domain.UserConnector;
 import com.farguito.sarlanga.helpers.AssetLoader;
+import com.farguito.sarlanga.helpers.TextureHelper;
 import com.farguito.sarlanga.ui.SimpleButton;
 import com.farguito.sarlanga.ui.SimpleTextField;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.farguito.sarlanga.menu.MenuController.MenuState.*;
+import static com.farguito.sarlanga.menu.MenuController.MenuState.MENU;
+import static com.farguito.sarlanga.menu.MenuController.MenuState.SELECT_LEVEL;
 
 /**
  * Created by Latharia on 04/12/2016.
@@ -32,6 +36,9 @@ public class MenuController {
     private SimpleTextField monsterFightButton;
 
     private Character[] characters;
+
+    private SimpleButton character1;
+    private SimpleButton character2;
 
     private SimpleButton backButton;
     private SimpleButton confirmButton;
@@ -68,12 +75,14 @@ public class MenuController {
 
     public MenuController(MenuScreen screen, int midPointY) {
         currentState = MENU;
-        this.user = screen.getGame().getUser();
-        this.selectedLevel = 0;
         this.screen = screen;
+        this.user = screen.getGame().getUser();
+        this.characters = screen.getGame().getUserCharacters();
+        if(characters == null) initUserCharacters();
+        this.selectedLevel = 0;
         this.midPointY = midPointY;
-        initUserCharacters();
         monsterFightButton = new SimpleTextField("FIGHT", AssetLoader.textSkin, SarlangaQuest.GAME_WIDTH/2-30, 50);
+        monsterFightButton.setAlignment(1);
         monsterFightButton.setHeight(60);
         monsterFightButton.setWidth(60);
 
@@ -98,8 +107,21 @@ public class MenuController {
     }
 
     public void initUserCharacters() {
-        UserConnector connector = new UserConnector();
-        characters = connector.getSelectedCharacters();
+        UserConnector userConnector = new UserConnector();
+        try {
+            userConnector.getUserCharacters(user);
+            characters = null;
+            int tries = 0;
+            int timeout = 15;
+            while (!userConnector.isResponseError() && tries < timeout) {
+                characters = userConnector.getUserCharactersResponse();
+                Thread.sleep(500);
+                tries++;
+            }
+            screen.getGame().setUserCharacters(characters);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void update(float delta) {
@@ -116,6 +138,7 @@ public class MenuController {
 
     public void startBattle() {
         if(selectedLevel != 0) {
+            renderer.stopMusic();
             screen.startBattle(selectedLevel);
         }
     }
@@ -138,4 +161,5 @@ public class MenuController {
 
     public boolean isMenu() { return currentState == MENU; }
     public boolean isSelectLevel() { return currentState == SELECT_LEVEL; }
+
 }

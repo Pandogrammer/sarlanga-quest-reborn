@@ -1,6 +1,7 @@
 package com.farguito.sarlanga.battle;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,7 +14,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.farguito.sarlanga.SarlangaQuest;
-import com.farguito.sarlanga.helpers.*;
+import com.farguito.sarlanga.helpers.AssetLoader;
 import com.farguito.sarlanga.tween.BattleCharacterAccessor;
 import com.farguito.sarlanga.tween.SpriteAccessor;
 import com.farguito.sarlanga.ui.CustomText;
@@ -33,7 +34,9 @@ import static com.farguito.sarlanga.tween.BattleCharacterAccessor.POSITION;
 
 public class BattleRenderer {
 
-    private int gameHeight;
+    private float gameHeight;
+    private float gameWidth;
+
     private float keyFrame;
 
     private BattleController controller;
@@ -49,18 +52,26 @@ public class BattleRenderer {
     private TextureRegion[] turnArrows;
     private Animation attack;
 
-    //lifeBar
-    private Vector2 lifeBar1;
-    private Vector2 lifeBar2;
-    private Vector2 lifeBar3;
-    private Vector2 lifeBar4;
+    private Music battleTheme;
+
+    //lifeBars
+    private Vector2 playerLifePoint1;
+    private Vector2 playerLifePoint2;
+    private Vector2 playerLifePoint3;
+    private Vector2 playerLifePoint4;
+
+    private Vector2 enemyLifePoint1;
+    private Vector2 enemyLifePoint2;
+    private Vector2 enemyLifePoint3;
+    private Vector2 enemyLifePoint4;
+
+    private float turnBarX;
+    private float turnBarY;
 
     private BitmapFont text;
     private BitmapFont lifeBarText;
     private BitmapFont endBattleText;
     private int damageDone;
-
-    private int midPointY;
 
     // Game Objects
     private List<BattleCharacter> battleCharacters;
@@ -74,20 +85,28 @@ public class BattleRenderer {
 
     private CustomText endMessage;
 
-    public BattleRenderer(BattleController controller, int gameHeight, int midPointY) {
+    public BattleRenderer(BattleController controller, float gameHeight, float gameWidth) {
         this.controller = controller;
         this.gameHeight = gameHeight;
+        this.gameWidth = gameWidth;
 
-        this.midPointY = midPointY;
         this.menuButtons = ((BattleInputHandler) Gdx.input.getInputProcessor())
                 .getMenuButtons();
         textureHelper = new com.farguito.sarlanga.helpers.TextureHelper();
 
 
-        lifeBar1 = new Vector2(0, 150);
-        lifeBar2 = new Vector2(100, 150);
-        lifeBar3 = new Vector2(100, gameHeight);
-        lifeBar4 = new Vector2(0, gameHeight);
+        playerLifePoint1 = new Vector2(0, gameHeight-50);
+        playerLifePoint2 = new Vector2(100, gameHeight-50);
+        playerLifePoint3 = new Vector2(100, gameHeight);
+        playerLifePoint4 = new Vector2(0, gameHeight);
+
+        enemyLifePoint1 = new Vector2(gameWidth-playerLifePoint1.x, playerLifePoint1.y);
+        enemyLifePoint2 = new Vector2(gameWidth-playerLifePoint2.x, playerLifePoint2.y);
+        enemyLifePoint3 = new Vector2(gameWidth-playerLifePoint3.x, playerLifePoint3.y);
+        enemyLifePoint4 = new Vector2(gameWidth-playerLifePoint4.x, playerLifePoint4.y);
+
+        turnBarX = 20;
+        turnBarY = 30;
 
         cam = new OrthographicCamera();
         cam.setToOrtho(true, SarlangaQuest.GAME_WIDTH, gameHeight);
@@ -125,6 +144,7 @@ public class BattleRenderer {
         text = AssetLoader.text;
         endBattleText = AssetLoader.endBattleText;
         lifeBarText = AssetLoader.lifeBarText;
+        lifeBarText.getData().setScale(0.8f);
 
         TextureRegion textureRegion;
         for(BattleCharacter battleCharacter : battleCharacters){
@@ -136,6 +156,10 @@ public class BattleRenderer {
                 battleCharacter.setTextureRegion(textureRegion);
             }
         }
+
+        battleTheme = AssetLoader.battleTheme;
+        battleTheme.setLooping(true);
+        battleTheme.play();
     }
 
     public void render(float delta, float runTime){
@@ -148,24 +172,17 @@ public class BattleRenderer {
 
         batcher.end();
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(210 / 255.0f, 200 / 255.0f, 145 / 255.0f, 0.5f);
-        shapeRenderer.rect(lifeBar1.x, lifeBar1.y, lifeBar2.x, gameHeight-lifeBar2.y);
 
-        shapeRenderer.setColor(240 / 255.0f, 230 / 255.0f, 175 / 255.0f, 0.5f);
-        shapeRenderer.rectLine(lifeBar1, lifeBar2.cpy().add(1.5f, 0), 3);
-        shapeRenderer.rectLine(lifeBar2, lifeBar3, 3);
-        shapeRenderer.rectLine(lifeBar3, lifeBar4, 3);
-        shapeRenderer.rectLine(lifeBar4, lifeBar1, 3);
-        shapeRenderer.end();
+        drawLifeBoxes();
+
 
         batcher.begin();
         batcher.enableBlending();
 
-
-        batcher.draw(turnBar, 20, 30);
+        batcher.draw(turnBar, turnBarX, turnBarY);
 
         drawCharactersLife();
+        drawEnemiesLife();
         drawButtonBar();
         drawCharacters();
 
@@ -191,16 +208,56 @@ public class BattleRenderer {
         batcher.end();
     }
 
+
+    private void drawLifeBoxes() {
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        //Player
+        shapeRenderer.setColor(210 / 255.0f, 200 / 255.0f, 145 / 255.0f, 0.5f);
+        shapeRenderer.rect(playerLifePoint1.x, playerLifePoint1.y, playerLifePoint2.x, playerLifePoint4.y);
+
+        shapeRenderer.setColor(240 / 255.0f, 230 / 255.0f, 175 / 255.0f, 0.5f);
+        shapeRenderer.rectLine(playerLifePoint1, playerLifePoint2.cpy().add(1.5f, 0), 3);
+        shapeRenderer.rectLine(playerLifePoint2, playerLifePoint3, 3);
+        shapeRenderer.rectLine(playerLifePoint3.cpy().add(1.5f, 0), playerLifePoint4, 3);
+        shapeRenderer.rectLine(playerLifePoint4, playerLifePoint1, 3);
+
+        //Enemy
+        shapeRenderer.setColor(210 / 255.0f, 200 / 255.0f, 145 / 255.0f, 0.5f);
+        shapeRenderer.rect(enemyLifePoint2.x, enemyLifePoint2.y, gameWidth-enemyLifePoint2.x, gameHeight-enemyLifePoint2.y);
+
+        shapeRenderer.setColor(240 / 255.0f, 230 / 255.0f, 175 / 255.0f, 0.5f);
+        shapeRenderer.rectLine(enemyLifePoint1, enemyLifePoint2.cpy().sub(1.5f, 0), 3);
+        shapeRenderer.rectLine(enemyLifePoint2, enemyLifePoint3, 3);
+        shapeRenderer.rectLine(enemyLifePoint3, enemyLifePoint4, 3);
+        shapeRenderer.rectLine(enemyLifePoint4, enemyLifePoint1, 3);
+
+        shapeRenderer.end();
+    }
+
     private void drawCharactersLife() {
-        batcher.draw(turnArrows[0], 5, 160);
+        batcher.draw(turnArrows[0], playerLifePoint1.x+5, playerLifePoint1.y+10);
         lifeBarText.draw(batcher, ""+battleCharacters.get(0).getActualHp()+" / "+battleCharacters.get(0).getMaxHp(),
-                        turnArrows[0].getRegionWidth()+10,160);
-        batcher.draw(turnArrows[1], 5, 180);
+                turnArrows[0].getRegionWidth()+10, playerLifePoint1.y+10);
+        batcher.draw(turnArrows[1], playerLifePoint1.x+5, playerLifePoint1.y+30);
         lifeBarText.draw(batcher, ""+battleCharacters.get(1).getActualHp()+" / "+battleCharacters.get(1).getMaxHp(),
-                        turnArrows[1].getRegionWidth()+10,180);
+                turnArrows[1].getRegionWidth()+10, playerLifePoint1.y+30);
 
     }
 
+    private void drawEnemiesLife() {
+        //resto 2 porque los otros son personajes
+        int monsterAmount = battleCharacters.size()-2;
+        float lifeBarSize = gameHeight-enemyLifePoint2.y;
+        float y;
+
+        for(int i = 0; i < monsterAmount; i++){
+            y = enemyLifePoint2.y+(lifeBarSize/monsterAmount)*i+2;
+            batcher.draw(turnArrows[i+2], enemyLifePoint2.x+5, y);
+            lifeBarText.draw(batcher, ""+battleCharacters.get(i+2).getActualHp()+" / "+battleCharacters.get(i+2).getMaxHp(),
+                    enemyLifePoint2.x+turnArrows[i+2].getRegionWidth()+10, y);
+        }
+    }
 
     private void drawEndMessage() {
         endBattleText.draw(batcher, endMessage.getText(), endMessage.getX(), endMessage.getY());
@@ -232,12 +289,14 @@ public class BattleRenderer {
                 }
                 if(i < 2) {
                     //es aliado
-                    batcher.draw(turnArrows[i], 21-turnArrows[i].getRegionWidth(),
-                            21 + turnBar.getRegionHeight() - battleCharacters.get(i).getTurnCounter());
+                    batcher.draw(turnArrows[i],
+                            1+turnBarX-turnArrows[i].getRegionWidth(),
+                            turnBarY+turnBar.getRegionHeight()-(turnArrows[i].getRegionHeight()/2)-battleCharacters.get(i).getTurnCounter());
                 } else {
                     //sino es enemigo
-                    batcher.draw(turnArrows[i], 19+turnBar.getRegionWidth(),
-                            21 + turnBar.getRegionHeight() - battleCharacters.get(i).getTurnCounter());
+                    batcher.draw(turnArrows[i],
+                           -1+turnBarX+turnBar.getRegionWidth(),
+                            turnBarY+turnBar.getRegionHeight()-(turnArrows[i].getRegionHeight()/2)-battleCharacters.get(i).getTurnCounter());
                 }
             }
             if(battleCharacters.get(i).isTurnReady() && battleCharacters.get(i).isPlayerCharacter() && controller.isPlayerTurn()){
@@ -268,11 +327,43 @@ public class BattleRenderer {
                                 keyFrame = 0;
                                 damageDone = controller.applyDamage(attacker, defender);
                                 drawAttackAnimation = true;
+                                AssetLoader.attackSound.play();
                             }
                         }))
                 .push(Tween.to(attacker, POSITION, 0.4f)
-                           .target(attacker.getX(), attacker.getY())
-                           .delay(attack.getAnimationDuration()))
+                        .target(attacker.getX(), attacker.getY())
+                        .delay(attack.getAnimationDuration()))
+                .setCallback(new TweenCallback() {
+                    @Override
+                    public void onEvent(int type, BaseTween<?> source) {
+                        drawAttackAnimation = false;
+                        controller.endTurn();
+                    }
+                })
+                .start(manager);
+    }
+
+
+    public void drawSkill(final BattleCharacter attacker, final BattleCharacter defender) {
+
+
+        Timeline.createSequence()
+                .push(Tween.to(attacker, POSITION, 0.8f)
+                        .target(defender.isPlayerCharacter() ?
+                                        defender.getX()+defender.getWidth() : defender.getX()-attacker.getWidth()
+                                , defender.getY()+defender.getHeight()-attacker.getHeight())
+                        .setCallback(new TweenCallback() {
+                            @Override
+                            public void onEvent(int type, BaseTween<?> source) {
+                                keyFrame = 0;
+                                damageDone = controller.applySkill(attacker, defender);
+                                drawAttackAnimation = true;
+                                AssetLoader.attackSound.play();
+                            }
+                        }))
+                .push(Tween.to(attacker, POSITION, 0.4f)
+                        .target(attacker.getX(), attacker.getY())
+                        .delay(attack.getAnimationDuration()))
                 .setCallback(new TweenCallback() {
                     @Override
                     public void onEvent(int type, BaseTween<?> source) {
@@ -304,4 +395,7 @@ public class BattleRenderer {
         endMessage = new CustomText(endBattleText, message, textX, textY);
     }
 
+    public void stopMusic(){
+        battleTheme.stop();
+    }
 }

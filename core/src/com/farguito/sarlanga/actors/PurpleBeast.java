@@ -1,6 +1,6 @@
 package com.farguito.sarlanga.actors;
 
-import static com.farguito.sarlanga.helpers.TextureHelper.CharacterCode.PURPLE_BEAST;
+import static com.farguito.sarlanga.actors.CharacterCode.PURPLE_BEAST;
 
 public class PurpleBeast extends Character {
 

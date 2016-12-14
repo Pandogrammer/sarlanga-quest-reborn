@@ -2,7 +2,6 @@ package com.farguito.sarlanga.battle;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.farguito.sarlanga.actors.Character;
 
@@ -26,6 +25,16 @@ public class BattleCharacter {
     private int maxHp;
     private int actualHp;
 
+    private float speed;
+    private float actualSpeed;
+
+    private int defense;
+    private int actualDefense;
+
+    private int damage;
+    private int actualDamage;
+
+
     private Vector2 position;
 
     private Rectangle bounds;
@@ -36,6 +45,16 @@ public class BattleCharacter {
         isAlive = true;
         maxHp = character.getHp();
         actualHp = maxHp;
+
+        speed = character.getSpeed();
+        actualSpeed = speed;
+
+        defense = character.getDefense();
+        actualDefense = defense;
+
+        damage = character.getDamage();
+        actualDamage = damage;
+
         position = new Vector2(x, y);
         turnCounter = ThreadLocalRandom.current().nextInt(character.getMinTurnCounter(), character.getMaxTurnCounter()+1);
         turnReady = false;
@@ -100,7 +119,7 @@ public class BattleCharacter {
     }
 
     public void updateTurn() {
-        turnCounter += character.getSpeed();
+        turnCounter += actualSpeed;
         if(turnCounter >= 100){
             turnReady = true;
         }
@@ -152,5 +171,42 @@ public class BattleCharacter {
 
     public void setAlive(boolean alive) {
         isAlive = alive;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public float getActualSpeed() {
+        return actualSpeed;
+    }
+
+    public int getDefense() {
+        return defense;
+    }
+
+    public int getActualDefense() {
+        return actualDefense;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public int getActualDamage() {
+        return actualDamage;
+    }
+
+
+    public void setActualDefense(int actualDefense) {
+        this.actualDefense = actualDefense;
+    }
+
+    public void setActualSpeed(float actualSpeed) {
+        this.actualSpeed = actualSpeed;
+    }
+
+    public void setActualDamage(int actualDamage) {
+        this.actualDamage = actualDamage;
     }
 }

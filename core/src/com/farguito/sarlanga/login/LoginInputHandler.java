@@ -59,26 +59,32 @@ public class LoginInputHandler implements InputProcessor {
         controller.getStage().unfocusAll();
         Gdx.input.setOnscreenKeyboardVisible(false);
 
-        if(controller.isMenu()){
-            if(controller.getLogin().isTouchDown(screenX, screenY))
-                controller.goLogin();
-            else if (controller.getRegister().isTouchDown(screenX, screenY))
-                controller.goRegister();
-        } else if (controller.isLogin()){
-            if(controller.getUsername().isTouchDown(screenX, screenY)) setFocusAndShowKeyboard(controller.getUsername());
-            else if(controller.getPassword().isTouchDown(screenX, screenY)) setFocusAndShowKeyboard(controller.getPassword());
-            else if(controller.getConfirmButton().isTouchDown(screenX, screenY));
-        } else if (controller.isRegister()){
-            if(controller.getUsername().isTouchDown(screenX, screenY)) setFocusAndShowKeyboard(controller.getUsername());
-            else if(controller.getPassword().isTouchDown(screenX, screenY))  setFocusAndShowKeyboard(controller.getPassword());
-            else if(controller.getConfirmPassword().isTouchDown(screenX, screenY)) setFocusAndShowKeyboard(controller.getConfirmPassword());
-            else if(controller.getConfirmButton().isTouchDown(screenX, screenY));
-        }
+        if(!controller.isWaiting()) {
+            if (controller.isMenu()) {
+                if (controller.getLogin().isTouchDown(screenX, screenY))
+                    controller.goLogin();
+                else if (controller.getRegister().isTouchDown(screenX, screenY))
+                    controller.goRegister();
+            } else if (controller.isLogin()) {
+                if (controller.getUsername().isTouchDown(screenX, screenY))
+                    setFocusAndShowKeyboard(controller.getUsername());
+                else if (controller.getPassword().isTouchDown(screenX, screenY))
+                    setFocusAndShowKeyboard(controller.getPassword());
+                else if (controller.getConfirmButton().isTouchDown(screenX, screenY)) ;
+            } else if (controller.isRegister()) {
+                if (controller.getUsername().isTouchDown(screenX, screenY))
+                    setFocusAndShowKeyboard(controller.getUsername());
+                else if (controller.getPassword().isTouchDown(screenX, screenY))
+                    setFocusAndShowKeyboard(controller.getPassword());
+                else if (controller.getConfirmPassword().isTouchDown(screenX, screenY))
+                    setFocusAndShowKeyboard(controller.getConfirmPassword());
+                else if (controller.getConfirmButton().isTouchDown(screenX, screenY)) ;
+            }
 
-        if(!controller.isMenu()) {
-            controller.getBackButton().isTouchDown(screenX, screenY);
+            if (!controller.isMenu()) {
+                controller.getBackButton().isTouchDown(screenX, screenY);
+            }
         }
-
         return false;
     }
 
@@ -88,14 +94,16 @@ public class LoginInputHandler implements InputProcessor {
         screenY = scaleY(screenY);
 
         screenY = (int) gameHeight-screenY;
-        if(!controller.isMenu()) {
-            if(controller.getBackButton().isTouchUp(screenX, screenY))
-                controller.goMenu();
-            if(controller.getConfirmButton().isTouchUp(screenX, screenY)){
-                if(controller.isRegister()) controller.doRegister();
-                else if(controller.isLogin()) controller.doLogin();
-            }
+        if(!controller.isWaiting()) {
+            if (!controller.isMenu()) {
+                if (controller.getBackButton().isTouchUp(screenX, screenY))
+                    controller.goMenu();
+                if (controller.getConfirmButton().isTouchUp(screenX, screenY)) {
+                    if (controller.isRegister()) controller.startRegister();
+                    else if (controller.isLogin()) controller.startLogin();
+                }
 
+            }
         }
         return false;
     }

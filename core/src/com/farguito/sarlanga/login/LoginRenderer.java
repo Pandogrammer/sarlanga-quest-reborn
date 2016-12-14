@@ -1,10 +1,13 @@
 package com.farguito.sarlanga.login;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.farguito.sarlanga.SarlangaQuest;
 import com.farguito.sarlanga.helpers.AssetLoader;
 import com.farguito.sarlanga.ui.SimpleButton;
 
@@ -21,9 +24,12 @@ public class LoginRenderer {
 
     private SpriteBatch batcher;
 
-    private Texture splash;
+    private Texture splash, title;
+    private Music menuTheme;
 
-    private int midPointY;
+    private BitmapFont text;
+
+    private float midPointY, gameWidth, gameHeight;
 
     // Buttons
     private List<SimpleButton> menuButtons;
@@ -33,6 +39,8 @@ public class LoginRenderer {
         this.controller = controller;
 
         this.midPointY = midPointY;
+        this.gameWidth = gameWidth;
+        this.gameHeight = gameHeight;
 
         cam = new OrthographicCamera();
         cam.setToOrtho(false, gameWidth, gameHeight);
@@ -41,10 +49,15 @@ public class LoginRenderer {
         batcher.setProjectionMatrix(cam.combined);
         initAssets();
 
+        menuTheme.setLooping(true);
+        menuTheme.play();
     }
 
     private void initAssets() {
         splash = AssetLoader.splash;
+        title = AssetLoader.title;
+        menuTheme = AssetLoader.menuTheme;
+        text = AssetLoader.text;
     }
 
     public void render(float delta) {
@@ -58,6 +71,7 @@ public class LoginRenderer {
 
         batcher.enableBlending();
 
+
         if(controller.isMenu()) {
             drawMenu();
         } else if(controller.isLogin()){
@@ -70,8 +84,10 @@ public class LoginRenderer {
             controller.getBackButton().draw(batcher);
             controller.getConfirmButton().draw(batcher);
         }
+
         batcher.end();
     }
+
 
     private void drawRegister() {
         drawUsername();
@@ -101,9 +117,13 @@ public class LoginRenderer {
     }
 
     private void drawMenu() {
-        controller.getTitle().draw(batcher, 1);
+        batcher.draw(title, gameWidth/2-title.getWidth()/2, gameHeight-title.getHeight()-10 );
         controller.getLogin().draw(batcher, 1);
         controller.getRegister().draw(batcher, 1);
 
+    }
+
+    public void stopMusic(){
+        menuTheme.stop();
     }
 }

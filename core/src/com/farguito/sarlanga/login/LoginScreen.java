@@ -3,7 +3,6 @@ package com.farguito.sarlanga.login;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.farguito.sarlanga.SarlangaQuest;
-import com.farguito.sarlanga.menu.MenuInputHandler;
 
 public class LoginScreen implements Screen {
 

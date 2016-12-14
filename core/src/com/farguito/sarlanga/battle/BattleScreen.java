@@ -26,11 +26,10 @@ public class BattleScreen implements Screen {
 
         float gameWidth = SarlangaQuest.GAME_WIDTH;
         float gameHeight = screenHeight / (screenWidth / gameWidth);
-        int midPointY = (int) (gameHeight / 2);
 
         controller = new BattleController(this);
         Gdx.input.setInputProcessor(new BattleInputHandler(controller, gameHeight, screenWidth / gameWidth, screenHeight / gameHeight));
-        renderer = new BattleRenderer(controller, (int) gameHeight, midPointY);
+        renderer = new BattleRenderer(controller, gameHeight, gameWidth);
         controller.setRenderer(renderer);
 
     }

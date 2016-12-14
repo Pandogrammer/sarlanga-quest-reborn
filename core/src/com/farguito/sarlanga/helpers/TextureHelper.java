@@ -2,13 +2,8 @@ package com.farguito.sarlanga.helpers;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.farguito.sarlanga.actors.Character;
-import com.farguito.sarlanga.helpers.AssetLoader;
 
 public class TextureHelper {
-
-    public enum CharacterCode {
-        RAT, OUTLAW, TOMBERI, CHIMERA, YELLOW_IMP, PURPLE_BEAST;
-    }
 
     public static TextureRegion getRegion(Character character) {
         switch (character.getCode()){

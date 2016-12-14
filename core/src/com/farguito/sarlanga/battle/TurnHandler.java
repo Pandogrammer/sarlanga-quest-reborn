@@ -1,9 +1,11 @@
 package com.farguito.sarlanga.battle;
 
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.farguito.sarlanga.battle.BattleController.BattleState.*;
+import static com.farguito.sarlanga.battle.BattleController.BattleState.CHECK_FINISH;
+import static com.farguito.sarlanga.battle.BattleController.BattleState.ENEMY_TURN;
+import static com.farguito.sarlanga.battle.BattleController.BattleState.PLAYER_TURN;
+import static com.farguito.sarlanga.battle.BattleController.BattleState.RUNNING;
 
 public class TurnHandler {
 

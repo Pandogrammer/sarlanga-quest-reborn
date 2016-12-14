@@ -1,12 +1,6 @@
 package com.farguito.sarlanga.actors;
 
-import com.farguito.sarlanga.helpers.TextureHelper.CharacterCode;
-
-/**
- * Created by Latharia on 07/12/2016.
- */
-
-public abstract class Character {
+public class Character {
 
     private int hp;
     private int damage;
@@ -17,16 +11,6 @@ public abstract class Character {
 
     private CharacterCode code;
 
-    /**
-     *
-     * @param hp
-     * @param damage
-     * @param defense
-     * @param speed
-     * @param minTurnCounter
-     * @param maxTurnCounter
-     * @param code
-     */
     public Character(int hp, int damage, int defense, float speed, int minTurnCounter, int maxTurnCounter, CharacterCode code) {
         this.speed = speed;
         this.hp = hp;

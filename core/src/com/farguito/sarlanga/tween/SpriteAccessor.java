@@ -1,9 +1,9 @@
 package com.farguito.sarlanga.tween;
 
 
-import aurelienribon.tweenengine.TweenAccessor;
-
 import com.badlogic.gdx.graphics.g2d.Sprite;
+
+import aurelienribon.tweenengine.TweenAccessor;
 
 public class SpriteAccessor implements TweenAccessor<Sprite> {
 

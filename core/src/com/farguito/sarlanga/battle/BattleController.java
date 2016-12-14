@@ -1,17 +1,10 @@
 package com.farguito.sarlanga.battle;
 
 import com.farguito.sarlanga.actors.Character;
-import com.farguito.sarlanga.actors.Chimera;
-import com.farguito.sarlanga.actors.Outlaw;
-import com.farguito.sarlanga.actors.PurpleBeast;
-import com.farguito.sarlanga.actors.Rat;
-import com.farguito.sarlanga.actors.Tomberi;
-import com.farguito.sarlanga.actors.YellowImp;
 import com.farguito.sarlanga.domain.UserConnector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class BattleController {
 
@@ -44,9 +37,13 @@ public class BattleController {
         renderer.drawAttack(attacker, defender);
     }
 
+    private void skill(BattleCharacter characterReady, BattleCharacter selectedCharacter) {
+        currentState = BattleState.ATTACKING;
+        renderer.drawSkill(characterReady, selectedCharacter);
+    }
 
     public int applyDamage(BattleCharacter attacker, BattleCharacter defender){
-        int damage = attacker.getCharacter().getDamage() - defender.getCharacter().getDefense();
+        int damage = attacker.getActualDamage() - defender.getActualDefense();
         defender.takeDamage(damage);
         if(defender.getActualHp() == 0){
             defender.setAlive(false);
@@ -71,14 +68,57 @@ public class BattleController {
     }
 
     public void goMenu() {
+        renderer.stopMusic();
         screen.goMenu();
     }
 
     private void initSelectedCharacters() {
-        playerCharacters = userConnector.getSelectedCharacters();
+        try {
+            userConnector.getUserCharacters(screen.getGame().getUser());
+            playerCharacters = null;
+            int tries = 0;
+            int timeout = 15;
+            while (!userConnector.isResponseError() && tries < timeout) {
+                playerCharacters = userConnector.getUserCharactersResponse();
+                Thread.sleep(500);
+                tries++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     private void initEnemyCharacters(){
-        monsters = battleConnector.getLevelMonsters(screen.getLevel());
+        try {
+            battleConnector.getLevelMonsters(screen.getLevel());
+            monsters = null;
+            int tries = 0;
+            int timeout = 15;
+            while (!battleConnector.isResponseError() && tries < timeout) {
+                monsters = battleConnector.getMonsters();
+                Thread.sleep(500);
+                tries++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void doSkill() {
+        skill(turnHandler.getCharacterReady(), selectedCharacter);
+    }
+
+    public int applySkill(BattleCharacter attacker, BattleCharacter defender) {
+        int damage = attacker.getActualDamage()*3/2 - defender.getActualDefense();
+
+        attacker.setActualSpeed(attacker.getActualSpeed()-0.15f);
+        attacker.setActualDefense(attacker.getActualDefense()-2);
+
+        defender.takeDamage(damage);
+        if(defender.getActualHp() == 0){
+            defender.setAlive(false);
+        }
+        return damage;
     }
 
 
@@ -94,10 +134,9 @@ public class BattleController {
     }
 
     private void initCharacters() {
-
-        initSelectedCharacters();
+        //initSelectedCharacters();
+        playerCharacters = screen.getGame().getUserCharacters();
         initEnemyCharacters();
-
 
         battleCharacters = new ArrayList<BattleCharacter>();
 
@@ -106,16 +145,16 @@ public class BattleController {
 
         switch (monsters.length) {
             case 1:
-                battleCharacters.add(new BattleCharacter(monsters[0], 220, 75, false));
+                battleCharacters.add(new BattleCharacter(monsters[0], 220, 85, false));
                 break;
             case 2:
                 battleCharacters.add(new BattleCharacter(monsters[0], 220, 50, false));
                 battleCharacters.add(new BattleCharacter(monsters[1], 220, 100, false));
                 break;
             case 3:
-                battleCharacters.add(new BattleCharacter(monsters[0], 220, 35, false));
+                battleCharacters.add(new BattleCharacter(monsters[0], 220, 45, false));
                 battleCharacters.add(new BattleCharacter(monsters[1], 280, 75, false));
-                battleCharacters.add(new BattleCharacter(monsters[2], 220, 115, false));
+                battleCharacters.add(new BattleCharacter(monsters[2], 220, 105, false));
                 break;
         }
     }

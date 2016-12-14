@@ -1,18 +1,15 @@
 package com.farguito.sarlanga.menu;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.farguito.sarlanga.helpers.TextureHelper;
 import com.farguito.sarlanga.helpers.AssetLoader;
-import com.farguito.sarlanga.ui.SimpleButton;
+import com.farguito.sarlanga.helpers.TextureHelper;
 import com.farguito.sarlanga.ui.SimpleTextField;
 
 import java.util.List;
@@ -38,8 +35,8 @@ public class MenuRenderer {
     // Game Objects
 
     // Game Assets
+    private Music menuTheme;
     private TextureRegion character1, character2;
-
     // Tween stuff
 
     // Buttons
@@ -60,6 +57,7 @@ public class MenuRenderer {
         initAssets();
         levels = controller.getLevelButtons();
         initLevels();
+        menuTheme.play();
     }
 
     private void initLevels() {
@@ -81,6 +79,7 @@ public class MenuRenderer {
 
     private void initAssets() {
         splash = AssetLoader.splash;
+        menuTheme = AssetLoader.menuTheme;
         character1 = TextureHelper.getRegion(controller.getCharacters()[0]);
         //character1.flip(false, true);
         character2 = TextureHelper.getRegion(controller.getCharacters()[1]);
@@ -125,4 +124,10 @@ public class MenuRenderer {
         batcher.draw(character1, 100, 175, character1.getRegionWidth(), -character1.getRegionHeight());
         batcher.draw(character2, 200, 175, character2.getRegionWidth(), -character2.getRegionHeight());
     }
+
+    public void stopMusic(){
+        menuTheme.stop();
+    }
+
+
 }

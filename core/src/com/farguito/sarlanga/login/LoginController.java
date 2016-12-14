@@ -3,13 +3,15 @@ package com.farguito.sarlanga.login;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.farguito.sarlanga.SarlangaQuest;
+import com.farguito.sarlanga.domain.User;
 import com.farguito.sarlanga.helpers.AssetLoader;
 import com.farguito.sarlanga.menu.MenuScreen;
 import com.farguito.sarlanga.ui.SimpleButton;
 import com.farguito.sarlanga.ui.SimpleTextField;
 
-import static com.farguito.sarlanga.login.LoginController.LoginState.*;
+import static com.farguito.sarlanga.login.LoginController.LoginState.LOGIN;
+import static com.farguito.sarlanga.login.LoginController.LoginState.MENU;
+import static com.farguito.sarlanga.login.LoginController.LoginState.REGISTER;
 
 
 public class LoginController {
@@ -38,7 +40,15 @@ public class LoginController {
     private SimpleButton backButton;
     private SimpleButton confirmButton;
 
-    private SimpleTextField title;
+    private SimpleTextField waitingText;
+
+    private boolean waiting;
+    private float timeWaiting;
+    private float timeout = 3000;
+
+    public SimpleTextField getWaitingText() {
+        return waitingText;
+    }
 
     public enum LoginState {
         MENU, LOGIN, REGISTER
@@ -46,6 +56,7 @@ public class LoginController {
 
     public LoginController(LoginScreen screen, int midPointY) {
         currentState = MENU;
+        waiting = false;
         this.screen = screen;
         connection = new LoginConnector();
         stage = new Stage();
@@ -62,9 +73,6 @@ public class LoginController {
         confirmPassword.setPasswordCharacter('*');
         confirmPassword.setPasswordMode(true);
         confirmPasswordLabel = new Label("Confirm:", AssetLoader.textSkin);
-
-        title = new SimpleTextField("SARLANGA QUEST", AssetLoader.textSkin , 100, 150);
-        title.setAlignment(1);
 
         login = new SimpleTextField("LOGIN", AssetLoader.textSkin , 100, 100);
         login.setAlignment(1);
@@ -114,23 +122,12 @@ public class LoginController {
         currentState = MENU;
     }
 
-    public void doRegister() {
+    public void startRegister() {
         try {
             if(!password.getText().isEmpty()&& password.getText().contentEquals(confirmPassword.getText())){
+                timeWaiting = 0;
+                waiting = true;
                 connection.register(username.getText(), password.getText());
-                com.farguito.sarlanga.domain.User user = null;
-                int tries = 0;
-                int timeout = 15;
-                while (user == null && tries < timeout) {
-                    user = connection.getRegisterResponse();
-                    Thread.sleep(1000);
-                    tries++;
-                }
-                if(user != null){
-                    this.screen.getGame().setUser(user);
-                    goMenuScreen();
-                }
-
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -138,28 +135,40 @@ public class LoginController {
     }
 
 
-    public void doLogin() {
+    private void finishRegister(){
         try {
-            connection.login(username.getText(), password.getText());
-            com.farguito.sarlanga.domain.User user = null;
-            int tries = 0;
-            int timeout = 15;
-            while(user == null && tries < timeout) {
-                user = connection.getLoginResponse();
-                Thread.sleep(1000);
-                tries++;
-            }
-            if(user != null){
-                this.screen.getGame().setUser(user);
-                goMenuScreen();
-            }
-
+            waiting = false;
+            User user = connection.getRegisterResponse();
+            this.screen.getGame().setUser(user);
+            goMenuScreen();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    public void startLogin() {
+        try {
+            timeWaiting = 0;
+            waiting = true;
+            connection.login(username.getText(), password.getText());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void finishLogin() {
+        try {
+            waiting = false;
+            User user = connection.getLoginResponse();
+            this.screen.getGame().setUser(user);
+            goMenuScreen();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private void goMenuScreen() {
+        renderer.stopMusic();
         screen.getGame().setScreen(new MenuScreen(screen.getGame()));
     }
 
@@ -168,7 +177,23 @@ public class LoginController {
     }
 
     public void update(float delta) {
-
+        if(waiting){
+            System.out.println(timeWaiting);
+            if(!connection.isResponseError()
+                    && connection.isWaiting()
+                    && timeWaiting < timeout)
+                timeWaiting += delta;
+            else {
+                switch (currentState) {
+                    case LOGIN:
+                        finishLogin();
+                        break;
+                    case REGISTER:
+                        finishRegister();
+                        break;
+                }
+            }
+        }
     }
     public boolean isLogin(){ return currentState == LOGIN; }
     public boolean isMenu(){ return currentState == MENU; }
@@ -218,11 +243,6 @@ public class LoginController {
         return register;
     }
 
-
-    public SimpleTextField getTitle() {
-        return title;
-    }
-
     public SimpleButton getBackButton() {
         return backButton;
     }
@@ -230,4 +250,7 @@ public class LoginController {
         return confirmButton;
     }
 
+    public boolean isWaiting(){
+        return waiting;
+    }
 }

@@ -1,16 +1,19 @@
 package com.farguito.sarlanga.battle;
 
-import com.badlogic.gdx.Net.*;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Net;
+import com.badlogic.gdx.Net.HttpRequest;
+import com.badlogic.gdx.Net.HttpResponse;
+import com.badlogic.gdx.Net.HttpResponseListener;
+import com.badlogic.gdx.net.HttpStatus;
 import com.farguito.sarlanga.SarlangaQuest;
 import com.farguito.sarlanga.actors.Character;
-import com.farguito.sarlanga.actors.Chimera;
-import com.farguito.sarlanga.actors.Outlaw;
-import com.farguito.sarlanga.actors.PurpleBeast;
-import com.farguito.sarlanga.actors.Rat;
-import com.farguito.sarlanga.actors.Tomberi;
-import com.farguito.sarlanga.actors.YellowImp;
+import com.farguito.sarlanga.actors.CharacterCode;
+import com.farguito.sarlanga.actors.MonsterFactory;
+import com.farguito.sarlanga.helpers.TextureHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -18,12 +21,14 @@ import java.net.URLConnection;
 public class BattleConnector implements HttpResponseListener {
 
     private URL url = null;
-    private URLConnection conn = null;
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
+    private String charactersResponse;
+    private boolean responseError;
 
     public BattleConnector(){
         try {
             url = new URL(SarlangaQuest.url);
+            mapper = new ObjectMapper();
         } catch (MalformedURLException e) {
             System.out.println(e.getMessage());
         }
@@ -31,7 +36,12 @@ public class BattleConnector implements HttpResponseListener {
 
     @Override
     public void handleHttpResponse(HttpResponse httpResponse) {
-
+        HttpStatus status = httpResponse.getStatus();
+        if (status.getStatusCode() >= 200 && status.getStatusCode() < 300) {
+            charactersResponse = httpResponse.getResultAsString();
+        } else {
+            responseError = true;
+        }
     }
 
     @Override
@@ -45,28 +55,31 @@ public class BattleConnector implements HttpResponseListener {
     }
 
 
-    public Character[] getLevelMonsters(int level) {
-        Character[] characters = null;
-        switch (level){
-            case 1 : characters = new Character[]{
-                    new Rat(),new Rat(),new Rat()
-            }; break;
-            case 2 : characters = new Character[]{
-                    new Outlaw(), new Outlaw()
-            }; break;
-            case 3 : characters = new Character[]{
-                    new Rat(), new YellowImp(), new Rat()
-            }; break;
-            case 4 : characters = new Character[]{
-                    new YellowImp(), new Tomberi()
-            }; break;
-            case 5 : characters = new Character[]{
-                    new Outlaw(), new PurpleBeast(), new Outlaw()
-            }; break;
-            case 6 : characters = new Character[]{
-                    new Chimera()
-            }; break;
+    public void getLevelMonsters(int level) {
+        try {
+            responseError = false;
+            HttpRequest httpPost = new HttpRequest(Net.HttpMethods.POST);
+            httpPost.setUrl(url + "battle/getLevelMonsters");
+            httpPost.setHeader("Content-Type", "application/json");
+            httpPost.setContent(mapper.writeValueAsString(level));
+            Gdx.net.sendHttpRequest(httpPost, BattleConnector.this);
+        } catch (Exception e){
+            responseError = true;
         }
-        return characters;
+    }
+
+    public Character[] getMonsters() throws IOException {
+        if (charactersResponse != null) {
+            CharacterCode[] codes = mapper.readValue(charactersResponse, CharacterCode[].class);
+            Character[] characters = new Character[codes.length];
+            for(int i = 0; i < codes.length; i++){
+                characters[i] = MonsterFactory.getCharacter(codes[i]);
+            }
+            return characters;
+        } else return null;
+    }
+
+    public boolean isResponseError() {
+        return responseError;
     }
 }
